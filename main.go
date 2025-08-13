@@ -13,38 +13,90 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// --- MCP Protocol Structs ---
+// --- MCP JSON-RPC Protocol Structs ---
 
-// ToolSchema defines the structure of an MCP tool, as returned by the server.
+// JSONRPCRequest represents a JSON-RPC 2.0 request
+type JSONRPCRequest struct {
+	JSONRPC string      `json:"jsonrpc"`
+	ID      interface{} `json:"id"`
+	Method  string      `json:"method"`
+	Params  interface{} `json:"params,omitempty"`
+}
+
+// JSONRPCResponse represents a JSON-RPC 2.0 response
+type JSONRPCResponse struct {
+	JSONRPC string      `json:"jsonrpc"`
+	ID      interface{} `json:"id"`
+	Result  interface{} `json:"result,omitempty"`
+	Error   *JSONRPCError `json:"error,omitempty"`
+}
+
+// JSONRPCError represents a JSON-RPC 2.0 error
+type JSONRPCError struct {
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
+// ToolSchema defines the structure of an MCP tool
 type ToolSchema struct {
 	Name        string      `json:"name"`
 	Description string      `json:"description"`
-	Parameters  interface{} `json:"parameters"`
-	Returns     interface{} `json:"returns"`
+	InputSchema interface{} `json:"inputSchema"`
 }
 
-// InitializeRequest is the first request a client sends to the server for initial handshake.
-// This differs from the tool invocation requests and is used to establish the connection.
-type InitializeRequest struct {
+// InitializeParams for the initialize method
+type InitializeParams struct {
+	ProtocolVersion string      `json:"protocolVersion"`
+	Capabilities    interface{} `json:"capabilities"`
+	ClientInfo      ClientInfo  `json:"clientInfo"`
 }
 
-// ToolInvocationRequest represents a request to call a specific tool.
-type ToolInvocationRequest struct {
-	Name   string      `json:"name"`
-	Params interface{} `json:"params"`
+// ClientInfo contains information about the client
+type ClientInfo struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
 }
 
-// MCPRequest is the top-level request from the client.
-type MCPRequest struct {
-	StreamID   string                 `json:"streamId"`
-	Initialize *InitializeRequest     `json:"initialize,omitempty"`
-	ToolCode   *ToolInvocationRequest `json:"tool_code,omitempty"`
+// InitializeResult for the initialize response
+type InitializeResult struct {
+	ProtocolVersion string         `json:"protocolVersion"`
+	Capabilities    ServerCapabilities `json:"capabilities"`
+	ServerInfo      ServerInfo     `json:"serverInfo"`
 }
 
-// MCPResponse represents the response to an MCP client
-type MCPResponse struct {
-	Result interface{} `json:"result"`
-	Error  string      `json:"error,omitempty"`
+// ServerCapabilities defines what the server can do
+type ServerCapabilities struct {
+	Tools interface{} `json:"tools,omitempty"`
+}
+
+// ServerInfo contains information about the server
+type ServerInfo struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
+}
+
+// ToolsListResult for tools/list response
+type ToolsListResult struct {
+	Tools []ToolSchema `json:"tools"`
+}
+
+// ToolCallParams for tools/call method
+type ToolCallParams struct {
+	Name      string      `json:"name"`
+	Arguments interface{} `json:"arguments,omitempty"`
+}
+
+// ToolCallResult for tools/call response
+type ToolCallResult struct {
+	Content []ToolContent `json:"content"`
+}
+
+// ToolContent represents the result content from a tool call
+type ToolContent struct {
+	Type string      `json:"type"`
+	Text string      `json:"text,omitempty"`
+	Data interface{} `json:"data,omitempty"`
 }
 
 // Config holds server configuration
@@ -58,29 +110,23 @@ var tools = []ToolSchema{
 	{
 		Name:        "welcome_message",
 		Description: "Get the welcome message from the product service",
-		Parameters:  map[string]interface{}{"type": "object", "properties": map[string]interface{}{}},
-		Returns: map[string]interface{}{
-			"type": "object",
-			"properties": map[string]interface{}{
-				"message": map[string]string{"type": "string"},
-			},
+		InputSchema: map[string]interface{}{
+			"type":       "object",
+			"properties": map[string]interface{}{},
 		},
 	},
 	{
 		Name:        "health_check",
 		Description: "Check the health of the product service",
-		Parameters:  map[string]interface{}{"type": "object", "properties": map[string]interface{}{}},
-		Returns: map[string]interface{}{
-			"type": "object",
-			"properties": map[string]interface{}{
-				"status": map[string]string{"type": "string"},
-			},
+		InputSchema: map[string]interface{}{
+			"type":       "object",
+			"properties": map[string]interface{}{},
 		},
 	},
 	{
 		Name:        "create_product",
 		Description: "Create a new product in the store",
-		Parameters: map[string]interface{}{
+		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
 				"name":     map[string]string{"type": "string"},
@@ -90,42 +136,22 @@ var tools = []ToolSchema{
 			},
 			"required": []string{"name", "category", "price"},
 		},
-		Returns: map[string]interface{}{
-			"type": "object",
-			"properties": map[string]interface{}{
-				"id":       map[string]string{"type": "string"},
-				"name":     map[string]string{"type": "string"},
-				"category": map[string]string{"type": "string"},
-				"segment":  map[string]string{"type": "string"},
-				"price":    map[string]string{"type": "number"},
-			},
-		},
 	},
 	{
 		Name:        "get_product",
 		Description: "Retrieve a product by ID",
-		Parameters: map[string]interface{}{
+		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
 				"id": map[string]string{"type": "string"},
 			},
 			"required": []string{"id"},
 		},
-		Returns: map[string]interface{}{
-			"type": "object",
-			"properties": map[string]interface{}{
-				"id":       map[string]string{"type": "string"},
-				"name":     map[string]string{"type": "string"},
-				"category": map[string]string{"type": "string"},
-				"segment":  map[string]string{"type": "string"},
-				"price":    map[string]string{"type": "number"},
-			},
-		},
 	},
 	{
 		Name:        "update_product",
 		Description: "Update an existing product by ID",
-		Parameters: map[string]interface{}{
+		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
 				"id":    map[string]string{"type": "string"},
@@ -134,58 +160,31 @@ var tools = []ToolSchema{
 			},
 			"required": []string{"id"},
 		},
-		Returns: map[string]interface{}{
-			"type": "object",
-			"properties": map[string]interface{}{
-				"id":       map[string]string{"type": "string"},
-				"name":     map[string]string{"type": "string"},
-				"category": map[string]string{"type": "string"},
-				"segment":  map[string]string{"type": "string"},
-				"price":    map[string]string{"type": "number"},
-			},
-		},
 	},
 	{
 		Name:        "delete_product",
 		Description: "Delete a product by ID",
-		Parameters: map[string]interface{}{
+		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
 				"id": map[string]string{"type": "string"},
 			},
 			"required": []string{"id"},
 		},
-		Returns: map[string]interface{}{
-			"type": "object",
-			"properties": map[string]interface{}{
-				"message": map[string]string{"type": "string"},
-			},
-		},
 	},
 	{
 		Name:        "list_products",
 		Description: "List all products in the store",
-		Parameters:  map[string]interface{}{"type": "object", "properties": map[string]interface{}{}},
-		Returns: map[string]interface{}{
-			"type": "array",
-			"items": map[string]interface{}{
-				"type": "object",
-				"properties": map[string]interface{}{
-					"id":       map[string]string{"type": "string"},
-					"name":     map[string]string{"type": "string"},
-					"category": map[string]string{"type": "string"},
-					"segment":  map[string]string{"type": "string"},
-					"price":    map[string]string{"type": "number"},
-				},
-			},
+		InputSchema: map[string]interface{}{
+			"type":       "object",
+			"properties": map[string]interface{}{},
 		},
 	},
 }
 
-// mcpRouter is the main handler for all POST requests to the /mcp endpoint.
-// It inspects the request body to determine if it's an 'initialize' request or
-// a 'tool_code' invocation and routes to the appropriate handler.
-func mcpRouter(config Config) http.HandlerFunc {
+// mcpHandler is the main handler for all JSON-RPC requests to the /mcp endpoint.
+// It implements the MCP JSON-RPC 2.0 protocol with proper method routing.
+func mcpHandler(config Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
@@ -194,65 +193,118 @@ func mcpRouter(config Config) http.HandlerFunc {
 
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			http.Error(w, "Failed to read request body", http.StatusBadRequest)
+			sendJSONRPCError(w, nil, -32700, "Parse error", "Failed to read request body")
 			return
 		}
 
-		var req MCPRequest
+		var req JSONRPCRequest
 		if err := json.Unmarshal(body, &req); err != nil {
-			http.Error(w, "Invalid JSON in request body", http.StatusBadRequest)
+			sendJSONRPCError(w, nil, -32700, "Parse error", "Invalid JSON")
 			return
 		}
 
-		r.Body = io.NopCloser(bytes.NewBuffer(body))
+		// Validate JSON-RPC 2.0 format
+		if req.JSONRPC != "2.0" {
+			sendJSONRPCError(w, req.ID, -32600, "Invalid Request", "Invalid JSON-RPC version")
+			return
+		}
 
-		log.Printf("Received request: %+v", req)
+		log.Printf("Received JSON-RPC request: method=%s, id=%v", req.Method, req.ID)
 
-		if req.Initialize != nil {
-
-			// This is the initial handshake from the client
-			handleInitialize(w, r)
-		} else if req.ToolCode != nil {
-
-			// This is a tool invocation request
-			handleToolInvocation(w, r, config, req.ToolCode)
-		} else {
-
-			// Handle unsupported or malformed requests
-			http.Error(w, "Unsupported request type", http.StatusBadRequest)
+		// Route to appropriate handler based on method
+		switch req.Method {
+		case "initialize":
+			handleInitialize(w, req)
+		case "tools/list":
+			handleToolsList(w, req)
+		case "tools/call":
+			handleToolCall(w, req, config)
+		default:
+			sendJSONRPCError(w, req.ID, -32601, "Method not found", fmt.Sprintf("Unknown method: %s", req.Method))
 		}
 	}
 }
 
 // handleInitialize handles the initial handshake from the client
-func handleInitialize(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"tools": tools,
-	})
-	log.Println("Sent tool list to client.")
+func handleInitialize(w http.ResponseWriter, req JSONRPCRequest) {
+	var params InitializeParams
+	if req.Params != nil {
+		paramBytes, _ := json.Marshal(req.Params)
+		if err := json.Unmarshal(paramBytes, &params); err != nil {
+			sendJSONRPCError(w, req.ID, -32602, "Invalid params", "Failed to parse initialize params")
+			return
+		}
+	}
+
+	result := InitializeResult{
+		ProtocolVersion: "2024-11-05",
+		Capabilities: ServerCapabilities{
+			Tools: map[string]interface{}{},
+		},
+		ServerInfo: ServerInfo{
+			Name:    "ravi-mcp-server",
+			Version: "1.0.0",
+		},
+	}
+
+	sendJSONRPCResponse(w, req.ID, result)
+	log.Println("Sent initialize response to client.")
 }
 
-// handleToolInvocation handles requests to invoke a specific tool
-func handleToolInvocation(w http.ResponseWriter, r *http.Request, config Config, toolInvocation *ToolInvocationRequest) {
-	log.Printf("Received tool invocation request: %+v", *toolInvocation)
+// handleToolsList handles requests to list available tools
+func handleToolsList(w http.ResponseWriter, req JSONRPCRequest) {
+	result := ToolsListResult{
+		Tools: tools,
+	}
 
-	// map tools to microservice endpoints
-	method, url, body, done := mapToolsToEndpoints(w, toolInvocation, config)
-	if done {
+	sendJSONRPCResponse(w, req.ID, result)
+	log.Println("Sent tools list to client.")
+}
+
+// handleToolCall handles requests to invoke a specific tool
+func handleToolCall(w http.ResponseWriter, req JSONRPCRequest, config Config) {
+	var params ToolCallParams
+	if req.Params == nil {
+		sendJSONRPCError(w, req.ID, -32602, "Invalid params", "Missing tool call parameters")
 		return
 	}
 
-	// Call the microservice, e.g., product service
+	paramBytes, _ := json.Marshal(req.Params)
+	if err := json.Unmarshal(paramBytes, &params); err != nil {
+		sendJSONRPCError(w, req.ID, -32602, "Invalid params", "Failed to parse tool call params")
+		return
+	}
+
+	log.Printf("Received tool call: %s", params.Name)
+
+	// Map tool to microservice endpoint and execute
+	result, err := executeToolCall(params, config)
+	if err != nil {
+		sendJSONRPCError(w, req.ID, -32603, "Internal error", err.Error())
+		return
+	}
+
+	sendJSONRPCResponse(w, req.ID, result)
+}
+
+// executeToolCall executes the actual tool call against the microservice
+func executeToolCall(params ToolCallParams, config Config) (ToolCallResult, error) {
+	// Map tools to microservice endpoints
+	method, url, body, err := mapToolsToEndpoints(params, config)
+	if err != nil {
+		return ToolCallResult{}, err
+	}
+
+	// Call the microservice
 	client := &http.Client{}
 	httpReq, err := http.NewRequest(method, url, bytes.NewBuffer(body))
 	if err != nil {
-		http.Error(w, "Failed to create request", http.StatusInternalServerError)
-		return
+		return ToolCallResult{}, fmt.Errorf("failed to create request: %v", err)
 	}
 
 	log.Printf("Calling microservice: Method=%s, URL=%s", method, url)
 
+	// Add authentication token if available
 	token, err := metadata.Get("instance/service-accounts/default/token")
 	if err == nil {
 		httpReq.Header.Set("Authorization", "Bearer "+token)
@@ -261,93 +313,134 @@ func handleToolInvocation(w http.ResponseWriter, r *http.Request, config Config,
 	httpReq.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(httpReq)
 	if err != nil {
-		http.Error(w, "Failed to call microservice", http.StatusInternalServerError)
-		return
+		return ToolCallResult{}, fmt.Errorf("failed to call microservice: %v", err)
 	}
 	defer resp.Body.Close()
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		http.Error(w, "Failed to read response", http.StatusInternalServerError)
-		return
+		return ToolCallResult{}, fmt.Errorf("failed to read response: %v", err)
 	}
 
-	mcpResp := MCPResponse{}
+	// Create tool result based on response
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-
-		// handle responses based on the tool name
-		switch toolInvocation.Name {
-		case "list_products":
-			var products []map[string]interface{}
-			if err := json.Unmarshal(respBody, &products); err != nil {
-				log.Printf("Failed to unmarshal list_products response: %v", err)
-				mcpResp.Error = "Failed to parse microservice response"
-			} else {
-				mcpResp.Result = products
-			}
+		// Success response
+		var content ToolContent
+		
+		switch params.Name {
 		case "health_check":
-
-			// Health check returns a simple string, so we'll just return it directly
-			mcpResp.Result = string(respBody)
+			content = ToolContent{
+				Type: "text",
+				Text: string(respBody),
+			}
 		default:
-
-			// For all other endpoints, assume a JSON object response
-			var result map[string]interface{}
-			if err := json.Unmarshal(respBody, &result); err != nil {
-				log.Printf("Failed to unmarshal JSON response: %v", err)
-				mcpResp.Error = "Failed to parse microservice response"
-			} else {
-				mcpResp.Result = result
+			// For JSON responses, include both text and structured data
+			content = ToolContent{
+				Type: "text",
+				Text: string(respBody),
+			}
+			
+			// Try to parse as JSON for structured data
+			var jsonData interface{}
+			if json.Unmarshal(respBody, &jsonData) == nil {
+				content.Data = jsonData
 			}
 		}
-	} else {
-		mcpResp.Error = string(respBody)
-	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(mcpResp)
+		return ToolCallResult{
+			Content: []ToolContent{content},
+		}, nil
+	} else {
+		// Error response
+		return ToolCallResult{
+			Content: []ToolContent{
+				{
+					Type: "text",
+					Text: fmt.Sprintf("Error: %s", string(respBody)),
+				},
+			},
+		}, nil
+	}
 }
 
-// mapToolsToEndpoints maps the tool invocation to the correct microservice endpoint.
-func mapToolsToEndpoints(w http.ResponseWriter, req *ToolInvocationRequest, config Config) (string, string, []byte, bool) {
+// mapToolsToEndpoints maps the tool call to the correct microservice endpoint
+func mapToolsToEndpoints(params ToolCallParams, config Config) (string, string, []byte, error) {
 	var method, url string
 	var body []byte
 
-	params, ok := req.Params.(map[string]interface{})
-	if !ok {
-		http.Error(w, "Invalid params format", http.StatusBadRequest)
-		return "", "", nil, true
+	arguments, ok := params.Arguments.(map[string]interface{})
+	if !ok && params.Arguments != nil {
+		return "", "", nil, fmt.Errorf("invalid arguments format")
 	}
 
-	switch req.Name {
+	switch params.Name {
 	case "welcome_message":
 		method = "GET"
 		url = config.MicroserviceURL + "/"
 	case "health_check":
 		method = "GET"
-		url = config.MicroserviceURL + "/healthz" // TODO: Fix it , this is not working
+		url = config.MicroserviceURL + "/healthz"
 	case "create_product":
 		method = "POST"
 		url = config.MicroserviceURL + "/products"
-		body, _ = json.Marshal(params)
+		if arguments != nil {
+			body, _ = json.Marshal(arguments)
+		}
 	case "get_product":
 		method = "GET"
-		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, params["id"])
+		if arguments == nil || arguments["id"] == nil {
+			return "", "", nil, fmt.Errorf("missing required parameter: id")
+		}
+		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, arguments["id"])
 	case "update_product":
 		method = "PUT"
-		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, params["id"])
-		body, _ = json.Marshal(params)
+		if arguments == nil || arguments["id"] == nil {
+			return "", "", nil, fmt.Errorf("missing required parameter: id")
+		}
+		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, arguments["id"])
+		body, _ = json.Marshal(arguments)
 	case "delete_product":
 		method = "DELETE"
-		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, params["id"])
+		if arguments == nil || arguments["id"] == nil {
+			return "", "", nil, fmt.Errorf("missing required parameter: id")
+		}
+		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, arguments["id"])
 	case "list_products":
 		method = "GET"
 		url = config.MicroserviceURL + "/products"
 	default:
-		http.Error(w, "Unsupported tool", http.StatusBadRequest)
-		return "", "", nil, true
+		return "", "", nil, fmt.Errorf("unsupported tool: %s", params.Name)
 	}
-	return method, url, body, false
+
+	return method, url, body, nil
+}
+
+// sendJSONRPCResponse sends a successful JSON-RPC response
+func sendJSONRPCResponse(w http.ResponseWriter, id interface{}, result interface{}) {
+	response := JSONRPCResponse{
+		JSONRPC: "2.0",
+		ID:      id,
+		Result:  result,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+// sendJSONRPCError sends an error JSON-RPC response
+func sendJSONRPCError(w http.ResponseWriter, id interface{}, code int, message string, data interface{}) {
+	response := JSONRPCResponse{
+		JSONRPC: "2.0",
+		ID:      id,
+		Error: &JSONRPCError{
+			Code:    code,
+			Message: message,
+			Data:    data,
+		},
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func main() {
@@ -363,9 +456,14 @@ func main() {
 	}
 
 	router := mux.NewRouter()
-	router.HandleFunc("/mcp", mcpRouter(config)).Methods("POST")
+	router.HandleFunc("/mcp", mcpHandler(config)).Methods("POST")
 
 	log.Printf("Starting MCP server on port %s", config.Port)
+	log.Printf("MCP JSON-RPC 2.0 Protocol supported methods:")
+	log.Printf("  - initialize")
+	log.Printf("  - tools/list")
+	log.Printf("  - tools/call")
+	
 	if err := http.ListenAndServe(":"+config.Port, router); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
