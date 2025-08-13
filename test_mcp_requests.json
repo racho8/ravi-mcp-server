@@ -122,7 +122,6 @@
         "content": [
           {
             "type": "text",
-            "text": "{\"id\":\"product-123\",\"name\":\"MacBook Pro\",\"category\":\"Electronics\"}",
             "data": {
               "id": "product-123",
               "name": "MacBook Pro",

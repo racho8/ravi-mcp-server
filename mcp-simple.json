@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "ravi-product-service": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-fetch",
+        "https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp"
+      ]
+    }
+  }
+}

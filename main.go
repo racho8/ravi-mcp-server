@@ -329,21 +329,26 @@ func executeToolCall(params ToolCallParams, config Config) (ToolCallResult, erro
 		
 		switch params.Name {
 		case "health_check":
+			// Health check might return plain text, so include as text
 			content = ToolContent{
 				Type: "text",
 				Text: string(respBody),
 			}
 		default:
-			// For JSON responses, include both text and structured data
-			content = ToolContent{
-				Type: "text",
-				Text: string(respBody),
-			}
-			
-			// Try to parse as JSON for structured data
+			// For JSON responses, prefer structured data over raw text
 			var jsonData interface{}
 			if json.Unmarshal(respBody, &jsonData) == nil {
-				content.Data = jsonData
+				// Successfully parsed as JSON, use structured data only
+				content = ToolContent{
+					Type: "text",
+					Data: jsonData,
+				}
+			} else {
+				// Not valid JSON, fallback to text
+				content = ToolContent{
+					Type: "text",
+					Text: string(respBody),
+				}
 			}
 		}
 

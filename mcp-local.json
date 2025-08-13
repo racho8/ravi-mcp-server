@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "ravi-product-service-local": {
+      "command": "curl",
+      "args": [
+        "-X", "POST",
+        "http://localhost:8080/mcp",
+        "-H", "Content-Type: application/json",
+        "-d", "@-"
+      ]
+    }
+  }
+}
