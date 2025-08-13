@@ -33,7 +33,7 @@ type MCPResponse struct {
 	Error  string      `json:"error,omitempty"`
 }
 
-// Config holds server configuration
+// Config holds server configuration (for eg: product-service URL and port)
 type Config struct {
 	MicroserviceURL string
 	Port            string
@@ -69,17 +69,21 @@ var tools = []ToolSchema{
 		Parameters: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
-				"name":  map[string]string{"type": "string"},
-				"price": map[string]string{"type": "number"},
+				"name":     map[string]string{"type": "string"},
+				"category": map[string]string{"type": "string"},
+				"segment":  map[string]string{"type": "string"},
+				"price":    map[string]string{"type": "number"},
 			},
-			"required": []string{"name", "price"},
+			"required": []string{"name", "category", "price"},
 		},
 		Returns: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
-				"id":    map[string]string{"type": "string"},
-				"name":  map[string]string{"type": "string"},
-				"price": map[string]string{"type": "number"},
+				"id":       map[string]string{"type": "string"},
+				"name":     map[string]string{"type": "string"},
+				"category": map[string]string{"type": "string"},
+				"segment":  map[string]string{"type": "string"},
+				"price":    map[string]string{"type": "number"},
 			},
 		},
 	},
@@ -96,9 +100,11 @@ var tools = []ToolSchema{
 		Returns: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
-				"id":    map[string]string{"type": "string"},
-				"name":  map[string]string{"type": "string"},
-				"price": map[string]string{"type": "number"},
+				"id":       map[string]string{"type": "string"},
+				"name":     map[string]string{"type": "string"},
+				"category": map[string]string{"type": "string"},
+				"segment":  map[string]string{"type": "string"},
+				"price":    map[string]string{"type": "number"},
 			},
 		},
 	},
@@ -117,9 +123,11 @@ var tools = []ToolSchema{
 		Returns: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
-				"id":    map[string]string{"type": "string"},
-				"name":  map[string]string{"type": "string"},
-				"price": map[string]string{"type": "number"},
+				"id":       map[string]string{"type": "string"},
+				"name":     map[string]string{"type": "string"},
+				"category": map[string]string{"type": "string"},
+				"segment":  map[string]string{"type": "string"},
+				"price":    map[string]string{"type": "number"},
 			},
 		},
 	},
@@ -149,9 +157,11 @@ var tools = []ToolSchema{
 			"items": map[string]interface{}{
 				"type": "object",
 				"properties": map[string]interface{}{
-					"id":    map[string]string{"type": "string"},
-					"name":  map[string]string{"type": "string"},
-					"price": map[string]string{"type": "number"},
+					"id":       map[string]string{"type": "string"},
+					"name":     map[string]string{"type": "string"},
+					"category": map[string]string{"type": "string"},
+					"segment":  map[string]string{"type": "string"},
+					"price":    map[string]string{"type": "number"},
 				},
 			},
 		},
@@ -173,6 +183,8 @@ func mcpHandler(config Config) http.HandlerFunc {
 			return
 		}
 
+		log.Printf("Received request: %+v", req)
+
 		// Validate tool name
 		var tool ToolSchema
 		for _, t := range tools {
@@ -186,35 +198,9 @@ func mcpHandler(config Config) http.HandlerFunc {
 			return
 		}
 
-		// Map tool to microservice endpoint
-		var method, url string
-		var body []byte
-		switch req.ToolName {
-		case "welcome_message":
-			method = "GET"
-			url = config.MicroserviceURL + "/"
-		case "health_check":
-			method = "GET"
-			url = config.MicroserviceURL + "/healthz"
-		case "create_product":
-			method = "POST"
-			url = config.MicroserviceURL + "/products"
-			body, _ = json.Marshal(req.Params)
-		case "get_product":
-			method = "GET"
-			url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, req.Params["id"])
-		case "update_product":
-			method = "PUT"
-			url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, req.Params["id"])
-			body, _ = json.Marshal(req.Params)
-		case "delete_product":
-			method = "DELETE"
-			url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, req.Params["id"])
-		case "list_products":
-			method = "GET"
-			url = config.MicroserviceURL + "/products"
-		default:
-			http.Error(w, "Unsupported tool", http.StatusBadRequest)
+		// map tools to microservice endpoints
+		method, url, body, done := mapToolsToEndpoints(w, req, config)
+		if done {
 			return
 		}
 
@@ -225,6 +211,8 @@ func mcpHandler(config Config) http.HandlerFunc {
 			http.Error(w, "Failed to create request", http.StatusInternalServerError)
 			return
 		}
+
+		log.Printf("Calling microservice: Method=%s, URL=%s, Body=%s", method, url, string(body))
 
 		// Add Google Cloud authentication
 		token, err := metadata.Get("instance/service-accounts/default/token")
@@ -260,7 +248,44 @@ func mcpHandler(config Config) http.HandlerFunc {
 	}
 }
 
+func mapToolsToEndpoints(w http.ResponseWriter, req MCPRequest, config Config) (string, string, []byte, bool) {
+	var method, url string
+	var body []byte
+	switch req.ToolName {
+	case "welcome_message":
+		method = "GET"
+		url = config.MicroserviceURL + "/"
+	case "health_check":
+		method = "GET"
+		url = config.MicroserviceURL + "/healthz"
+	case "create_product":
+		method = "POST"
+		url = config.MicroserviceURL + "/products"
+		body, _ = json.Marshal(req.Params)
+	case "get_product":
+		method = "GET"
+		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, req.Params["id"])
+	case "update_product":
+		method = "PUT"
+		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, req.Params["id"])
+		body, _ = json.Marshal(req.Params)
+	case "delete_product":
+		method = "DELETE"
+		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, req.Params["id"])
+	case "list_products":
+		method = "GET"
+		url = config.MicroserviceURL + "/products"
+	default:
+		http.Error(w, "Unsupported tool", http.StatusBadRequest)
+		return "", "", nil, true
+	}
+	return method, url, body, false
+}
+
 func main() {
+	log.Printf("MICROSERVICE_URL: %s", os.Getenv("MICROSERVICE_URL"))
+	log.Printf("PORT of the MICRO SERVICE is::: %s", os.Getenv("PORT"))
+
 	config := Config{
 		MicroserviceURL: os.Getenv("MICROSERVICE_URL"), // Set to your microservice URL
 		Port:            os.Getenv("PORT"),             // Default to 8080 if not set

@@ -53,6 +53,12 @@ The application is configured for deployment to Google Cloud Run using GitHub Ac
 
 ## Usage Example
 
+### To RUN the MCP server locally, use the following command:
+
+export MICROSERVICE_URL="https://product-service-256110662801.europe-west3.run.app"
+export GCP_SA_KEY="YOUR_GCP_SA_KEY_PATH"
+go run main.go
+
 ```bash
 # Execute a tool
 curl -X POST https://[YOUR-SERVER]/mcp \
@@ -85,3 +91,10 @@ gcloud run services add-iam-policy-binding ravi-mcp-server \
   --role="roles/run.invoker"
 
 
+
+## TEST MCP SERVER with POSTMAN
+
+curl -X POST https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer $(gcloud auth print-identity-token)" \
+-d '{"tool_name": "create_product", "params": {"name": "Apple iPad", "price": 4995}}'
