@@ -13,18 +13,32 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// ToolSchema defines the structure of an MCP tool
+// --- MCP Protocol Structs ---
+
+// ToolSchema defines the structure of an MCP tool, as returned by the server.
 type ToolSchema struct {
-	Name        string                 `json:"name"`
-	Description string                 `json:"description"`
-	Parameters  map[string]interface{} `json:"parameters"`
-	Returns     map[string]interface{} `json:"returns"`
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	Parameters  interface{} `json:"parameters"`
+	Returns     interface{} `json:"returns"`
 }
 
-// MCPRequest represents an incoming MCP request
+// InitializeRequest is the first request a client sends to the server for initial handshake.
+// This differs from the tool invocation requests and is used to establish the connection.
+type InitializeRequest struct {
+}
+
+// ToolInvocationRequest represents a request to call a specific tool.
+type ToolInvocationRequest struct {
+	Name   string      `json:"name"`
+	Params interface{} `json:"params"`
+}
+
+// MCPRequest is the top-level request from the client.
 type MCPRequest struct {
-	ToolName string                 `json:"tool_name"`
-	Params   map[string]interface{} `json:"params"`
+	StreamID   string                 `json:"streamId"`
+	Initialize *InitializeRequest     `json:"initialize,omitempty"`
+	ToolCode   *ToolInvocationRequest `json:"tool_code,omitempty"`
 }
 
 // MCPResponse represents the response to an MCP client
@@ -33,7 +47,7 @@ type MCPResponse struct {
 	Error  string      `json:"error,omitempty"`
 }
 
-// Config holds server configuration (for eg: product-service URL and port)
+// Config holds server configuration
 type Config struct {
 	MicroserviceURL string
 	Port            string
@@ -168,110 +182,164 @@ var tools = []ToolSchema{
 	},
 }
 
-// getToolsHandler returns the list of available tools
-func getToolsHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(tools)
-}
-
-// mcpHandler processes MCP requests
-func mcpHandler(config Config) http.HandlerFunc {
+// mcpRouter is the main handler for all POST requests to the /mcp endpoint.
+// It inspects the request body to determine if it's an 'initialize' request or
+// a 'tool_code' invocation and routes to the appropriate handler.
+func mcpRouter(config Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req MCPRequest
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 			return
 		}
+
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Failed to read request body", http.StatusBadRequest)
+			return
+		}
+
+		var req MCPRequest
+		if err := json.Unmarshal(body, &req); err != nil {
+			http.Error(w, "Invalid JSON in request body", http.StatusBadRequest)
+			return
+		}
+
+		r.Body = io.NopCloser(bytes.NewBuffer(body))
 
 		log.Printf("Received request: %+v", req)
 
-		// Validate tool name
-		var tool ToolSchema
-		for _, t := range tools {
-			if t.Name == req.ToolName {
-				tool = t
-				break
-			}
-		}
-		if tool.Name == "" {
-			http.Error(w, "Tool not found", http.StatusNotFound)
-			return
-		}
+		if req.Initialize != nil {
 
-		// map tools to microservice endpoints
-		method, url, body, done := mapToolsToEndpoints(w, req, config)
-		if done {
-			return
-		}
+			// This is the initial handshake from the client
+			handleInitialize(w, r)
+		} else if req.ToolCode != nil {
 
-		// Call microservice
-		client := &http.Client{}
-		httpReq, err := http.NewRequest(method, url, bytes.NewBuffer(body))
-		if err != nil {
-			http.Error(w, "Failed to create request", http.StatusInternalServerError)
-			return
-		}
-
-		log.Printf("Calling microservice: Method=%s, URL=%s, Body=%s", method, url, string(body))
-
-		// Add Google Cloud authentication
-		token, err := metadata.Get("instance/service-accounts/default/token")
-		if err == nil {
-			httpReq.Header.Set("Authorization", "Bearer "+token)
-		}
-
-		httpReq.Header.Set("Content-Type", "application/json")
-		resp, err := client.Do(httpReq)
-		if err != nil {
-			http.Error(w, "Failed to call microservice", http.StatusInternalServerError)
-			return
-		}
-		defer resp.Body.Close()
-
-		// Read response
-		respBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			http.Error(w, "Failed to read response", http.StatusInternalServerError)
-			return
-		}
-
-		// Prepare MCP response
-		mcpResp := MCPResponse{}
-		if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-			json.Unmarshal(respBody, &mcpResp.Result)
+			// This is a tool invocation request
+			handleToolInvocation(w, r, config, req.ToolCode)
 		} else {
-			mcpResp.Error = string(respBody)
-		}
 
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(mcpResp)
+			// Handle unsupported or malformed requests
+			http.Error(w, "Unsupported request type", http.StatusBadRequest)
+		}
 	}
 }
 
-func mapToolsToEndpoints(w http.ResponseWriter, req MCPRequest, config Config) (string, string, []byte, bool) {
+// handleInitialize handles the initial handshake from the client
+func handleInitialize(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"tools": tools,
+	})
+	log.Println("Sent tool list to client.")
+}
+
+// handleToolInvocation handles requests to invoke a specific tool
+func handleToolInvocation(w http.ResponseWriter, r *http.Request, config Config, toolInvocation *ToolInvocationRequest) {
+	log.Printf("Received tool invocation request: %+v", *toolInvocation)
+
+	// map tools to microservice endpoints
+	method, url, body, done := mapToolsToEndpoints(w, toolInvocation, config)
+	if done {
+		return
+	}
+
+	// Call the microservice, e.g., product service
+	client := &http.Client{}
+	httpReq, err := http.NewRequest(method, url, bytes.NewBuffer(body))
+	if err != nil {
+		http.Error(w, "Failed to create request", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("Calling microservice: Method=%s, URL=%s", method, url)
+
+	token, err := metadata.Get("instance/service-accounts/default/token")
+	if err == nil {
+		httpReq.Header.Set("Authorization", "Bearer "+token)
+	}
+
+	httpReq.Header.Set("Content-Type", "application/json")
+	resp, err := client.Do(httpReq)
+	if err != nil {
+		http.Error(w, "Failed to call microservice", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		http.Error(w, "Failed to read response", http.StatusInternalServerError)
+		return
+	}
+
+	mcpResp := MCPResponse{}
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+
+		// handle responses based on the tool name
+		switch toolInvocation.Name {
+		case "list_products":
+			var products []map[string]interface{}
+			if err := json.Unmarshal(respBody, &products); err != nil {
+				log.Printf("Failed to unmarshal list_products response: %v", err)
+				mcpResp.Error = "Failed to parse microservice response"
+			} else {
+				mcpResp.Result = products
+			}
+		case "health_check":
+
+			// Health check returns a simple string, so we'll just return it directly
+			mcpResp.Result = string(respBody)
+		default:
+
+			// For all other endpoints, assume a JSON object response
+			var result map[string]interface{}
+			if err := json.Unmarshal(respBody, &result); err != nil {
+				log.Printf("Failed to unmarshal JSON response: %v", err)
+				mcpResp.Error = "Failed to parse microservice response"
+			} else {
+				mcpResp.Result = result
+			}
+		}
+	} else {
+		mcpResp.Error = string(respBody)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(mcpResp)
+}
+
+// mapToolsToEndpoints maps the tool invocation to the correct microservice endpoint.
+func mapToolsToEndpoints(w http.ResponseWriter, req *ToolInvocationRequest, config Config) (string, string, []byte, bool) {
 	var method, url string
 	var body []byte
-	switch req.ToolName {
+
+	params, ok := req.Params.(map[string]interface{})
+	if !ok {
+		http.Error(w, "Invalid params format", http.StatusBadRequest)
+		return "", "", nil, true
+	}
+
+	switch req.Name {
 	case "welcome_message":
 		method = "GET"
 		url = config.MicroserviceURL + "/"
 	case "health_check":
 		method = "GET"
-		url = config.MicroserviceURL + "/healthz"
+		url = config.MicroserviceURL + "/healthz" // TODO: Fix it , this is not working
 	case "create_product":
 		method = "POST"
 		url = config.MicroserviceURL + "/products"
-		body, _ = json.Marshal(req.Params)
+		body, _ = json.Marshal(params)
 	case "get_product":
 		method = "GET"
-		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, req.Params["id"])
+		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, params["id"])
 	case "update_product":
 		method = "PUT"
-		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, req.Params["id"])
-		body, _ = json.Marshal(req.Params)
+		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, params["id"])
+		body, _ = json.Marshal(params)
 	case "delete_product":
 		method = "DELETE"
-		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, req.Params["id"])
+		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, params["id"])
 	case "list_products":
 		method = "GET"
 		url = config.MicroserviceURL + "/products"
@@ -284,19 +352,18 @@ func mapToolsToEndpoints(w http.ResponseWriter, req MCPRequest, config Config) (
 
 func main() {
 	log.Printf("MICROSERVICE_URL: %s", os.Getenv("MICROSERVICE_URL"))
-	log.Printf("PORT of the MICRO SERVICE is::: %s", os.Getenv("PORT"))
+	log.Printf("PORT: %s", os.Getenv("PORT"))
 
 	config := Config{
-		MicroserviceURL: os.Getenv("MICROSERVICE_URL"), // Set to your microservice URL
-		Port:            os.Getenv("PORT"),             // Default to 8080 if not set
+		MicroserviceURL: os.Getenv("MICROSERVICE_URL"),
+		Port:            os.Getenv("PORT"),
 	}
 	if config.Port == "" {
 		config.Port = "8080"
 	}
 
 	router := mux.NewRouter()
-	router.HandleFunc("/tools", getToolsHandler).Methods("GET")
-	router.HandleFunc("/mcp", mcpHandler(config)).Methods("POST")
+	router.HandleFunc("/mcp", mcpRouter(config)).Methods("POST")
 
 	log.Printf("Starting MCP server on port %s", config.Port)
 	if err := http.ListenAndServe(":"+config.Port, router); err != nil {
