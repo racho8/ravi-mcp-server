@@ -1,128 +1,82 @@
 # Ravi MCP Server
 
-A **Model Context Protocol (MCP)** server implementation in Go that provides product management capabilities. This server follows the MCP JSON-RPC 2.0 specification and is deployed on Google Cloud Run.
+A **Model Context Protocol (MCP)** server that provides product management capabilities through a clean JSON-RPC 2.0 API. Deployed on Google Cloud Run with auto-scaling and high availability.
 
-## **Quick Start**
+## **What is This?**
 
-### **Test the Server:**
-```bash
-# Navigate to testing clients
-cd mcp-clients
+This server acts as a bridge between AI clients (like Claude Desktop) and a product database, enabling natural language interactions with structured data operations.
 
-# Option 1: Python client (command line)
-python mcp_test_client.py "list all products"
+**Key Features:**
+- MCP JSON-RPC 2.0 compliant
+- Product CRUD operations 
+- Google Cloud authentication
+- Browser and CLI testing clients
+- Microservices architecture
 
-# Option 2: Web client (browser)
-open mcp_web_client.html
-```
-
-### **Authentication:**
-```bash
-# Get your access token
-gcloud auth print-access-token
-```
-
-## **Project Structure**
-
-```
-ravi-mcp-server/
-├── main.go                   # Core MCP server implementation
-├── go.mod, go.sum           # Go dependencies
-├── Dockerfile               # Container configuration
-│
-├── mcp-clients/             # Testing Interfaces
-│   ├── README.md            # Client usage guide
-│   ├── mcp_test_client.py   # Python command-line client
-│   └── mcp_web_client.html  # Browser-based GUI client
-│
-├── config/                  # MCP configurations
-│   ├── mcp.json            # Full configuration
-│   ├── mcp-local.json      # Local development
-│   └── mcp-simple.json     # Minimal config
-│
-├── docs/                    # Documentation
-│   ├── architecture-diagram.svg    # System architecture diagram
-│   ├── MCP_CONFIGURATION.md
-│   ├── TEAM_ACCESS.md
-│   ├── TESTING.md
-│   └── WEB_CLIENT_GUIDE.md
-│
-├── tests/                   # Complete Testing Suite
-│   ├── README.md            # Complete testing guide
-│   ├── POSTMAN_IMPORT.md    # Postman import instructions
-│   ├── postman_collection_v2.json  # Postman collection
-│   ├── run_tests.sh         # Automated test runner
-│   ├── test_commands.sh     # Manual cURL commands
-│   ├── test_mcp_requests.json # JSON test examples
-│   └── validate_mcp.sh      # MCP protocol validation
-│
-└── setup-go-env.sh          # Go environment setup script
-```
-
-## **Architecture Overview**
-
-The Ravi MCP Server follows a distributed microservices architecture deployed on Google Cloud Platform. Below is the complete system architecture showing data flow from MCP clients to the database:
+## **Architecture**
 
 ![Architecture Diagram](docs/architecture-diagram.svg)
 
-### **Component Overview:**
+**Flow:** MCP Clients → Ravi MCP Server → Product Service → Cloud Datastore
 
-**Local Environment:**
-- **MCP Clients**: Python CLI, Web Browser, and Claude Desktop integration
-- **Authentication**: Google Cloud IAM with JWT tokens
+**Components:**
+- **MCP Clients**: Python CLI, Web browser, Claude Desktop integration
+- **MCP Server**: Go application handling JSON-RPC requests (Cloud Run)
+- **Product Service**: Business logic microservice (Cloud Run) 
+- **Cloud Datastore**: NoSQL database for product storage
 
-**Google Cloud Platform:**
-- **Ravi MCP Server**: Go-based JSON-RPC 2.0 server (Cloud Run)
-- **Product Service**: Business logic microservice (Cloud Run)
-- **Cloud Datastore**: NoSQL database for product data
+## **Quick Test (2 minutes)**
 
-### **Data Flow:**
-1. **Client Authentication**: Users authenticate via `gcloud auth` to get JWT tokens
-2. **MCP Protocol**: Clients send JSON-RPC 2.0 requests with Bearer tokens
-3. **Request Routing**: MCP Server validates tokens and routes to Product Service
-4. **Business Logic**: Product Service processes CRUD operations
-5. **Data Persistence**: Service interacts with Cloud Datastore for data storage
-6. **Response Chain**: Results flow back through the same path to clients
-
-## **MCP Tools Available**
-
-| Tool | Description | Arguments |
-|------|-------------|-----------|
-| `list_products` | Get all products in store | None |
-| `create_product` | Create new product | name, category, price |
-| `get_product` | Get specific product | id |
-| `update_product` | Update product details | id, (fields to update) |
-| `delete_product` | Remove product | id |
-| `health_check` | Server health status | None |
-| `welcome_message` | Welcome message | None |
-
-## **Server Features**
-
-- **MCP JSON-RPC 2.0 Compliant** - Full protocol implementation
-- **Google Cloud Run Deployment** - Scalable and secure
-- **CORS Support** - Works with browser clients
-- **JWT Authentication** - Google Cloud IAM integration
-- **Product Management** - Complete CRUD operations
-- **Health Monitoring** - Built-in health checks
-
-## **Development**
-
-### **Go Environment Setup:**
-This project requires Go 1.23+ and uses specific version configuration to avoid compiler/toolchain mismatches.
-
+### **1. Get Access Token**
 ```bash
-# Quick setup (recommended)
-./setup-go-env.sh
-
-# Manual setup
-export GOROOT="/opt/homebrew/Cellar/go/1.23.4/libexec"  # Adjust version as needed
-export PATH="$GOROOT/bin:$PATH"
-
-# Verify setup
-go version  # Should show go1.23.4 or later
+gcloud auth print-access-token
 ```
 
-### **Local Development:**
+### **2. Choose Your Testing Method**
+
+**Option A: Web Client (Easiest)**
+```bash
+cd mcp-clients
+open mcp_web_client.html
+# Paste your token and test in browser
+```
+
+**Option B: Python Client**
+```bash
+cd mcp-clients  
+python mcp_test_client.py "list all products"
+```
+
+**Option C: Direct API Call**
+```bash
+curl -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"health_check","arguments":{}}}'
+```
+
+## **Available Tools**
+
+| Tool | Purpose | Example Usage |
+|------|---------|---------------|
+| `list_products` | Get all products | "show me all products" |
+| `create_product` | Add new product | "create product: Laptop, Electronics, $999" |
+| `get_product` | Get specific product | "get product with ID 123" |
+| `update_product` | Modify product | "update product 123 price to $899" |
+| `delete_product` | Remove product | "delete product 123" |
+| `health_check` | Server status | "health check" |
+
+## **Local Development**
+
+### **Setup Go Environment**
+```bash
+# Quick setup (handles version issues)
+./setup-go-env.sh
+
+# Verify
+go version  # Should be 1.23+
+```
+
+### **Run Locally**
 ```bash
 # Install dependencies
 go mod download
@@ -130,101 +84,71 @@ go mod download
 # Run tests
 go test -v ./...
 
-# Run server locally
+# Start server
 export MICROSERVICE_URL="https://product-service-256110662801.europe-west3.run.app"
 go run main.go
-
-# Test with local config
-# Update config/mcp-local.json with localhost URL
 ```
-
-### **Deploy to Cloud Run:**
-
-## **Testing**
-
-### **Quick Tests:**
-```bash
-# Python client (developers)
-cd mcp-clients
-python mcp_test_client.py "health check"
-
-# Web client (everyone)
-open mcp-clients/mcp_web_client.html
-```
-
-### **Comprehensive Testing:**
-```bash
-# See complete testing guide
-cd tests
-cat README.md
-
-# Run all tests
-./run_tests.sh
-
-# Validate MCP compliance
-./validate_mcp.sh
-
-# Postman collection
-# See POSTMAN_IMPORT.md for import instructions
-```
-
-## **Team Access**
-
-For team members to test the server, see detailed instructions in:
-- **`docs/TEAM_ACCESS.md`** - Authentication setup for team members
-- **`mcp-clients/README.md`** - How to use both testing clients
-
-### **Quick Team Setup:**
-1. **Get access token**: `gcloud auth print-access-token`
-2. **Choose client**: Python (developers) or Web (everyone)
-3. **Start testing**: Follow client-specific instructions
 
 ## **Integration**
 
-### **Claude Desktop Integration:**
+### **Claude Desktop**
 ```bash
-# Copy configuration
 cp config/mcp.json ~/.config/claude/claude_desktop_config.json
-
-# Restart Claude Desktop
-# Ask: "Show me all products in the store"
+# Restart Claude Desktop, then ask: "Show me all products"
 ```
 
-### **Custom Integration:**
-- **Server URL**: `https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp`
+### **Custom Applications**
+- **Endpoint**: `https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp`
 - **Protocol**: MCP JSON-RPC 2.0
-- **Authentication**: Google Cloud Bearer tokens
-- **Content-Type**: `application/json`
+- **Auth**: Google Cloud Bearer tokens
 
-## **Documentation**
+## **Project Structure**
 
-- **`mcp-clients/README.md`** - Complete client usage guide
-- **`docs/MCP_CONFIGURATION.md`** - MCP setup instructions
-- **`docs/TEAM_ACCESS.md`** - Team authentication guide
-- **`docs/TESTING.md`** - Testing procedures
-- **`docs/WEB_CLIENT_GUIDE.md`** - Web client details
-
-## **Server Endpoint**
-
-**Production URL**: `https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp`
-
-### **Health Check:**
-```bash
-curl -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-  https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"health_check","arguments":{}}}'
+```
+ravi-mcp-server/
+├── main.go                        # Core server
+├── mcp-clients/                   # Testing clients
+│   ├── mcp_test_client.py        # Python CLI
+│   └── mcp_web_client.html       # Web GUI
+├── config/                        # MCP configurations
+├── docs/                          # Detailed guides
+├── tests/                         # Complete testing suite
+└── setup-go-env.sh               # Environment setup
 ```
 
-## **Getting Started**
+## **Deployment & Management**
 
-1. **Authenticate**: `gcloud auth login`
-2. **Test server**: `cd mcp-clients && python mcp_test_client.py "health check"`
-3. **Explore tools**: Use web client for interactive testing
-4. **Read docs**: Check `docs/` for detailed guides
-5. **Integrate**: Use with Claude Desktop or custom applications
+### **Cloud Run Commands**
+```bash
+# Update environment variables
+gcloud run services update ravi-mcp-server \
+    --region=europe-west3 \
+    --set-env-vars "MICROSERVICE_URL=https://product-service-256110662801.europe-west3.run.app"
+
+# Check current environment variables
+gcloud run services describe ravi-mcp-server \
+  --region=europe-west3 \
+  --format="value(spec.template.spec.containers[0].env)"
+
+# Add IAM access (if needed)
+gcloud run services add-iam-policy-binding ravi-mcp-server \
+  --region=europe-west3 \
+  --member="domain:your-organization.com" \
+  --role="roles/run.invoker"
+```
+
+### **Required Secrets (GitHub Actions)**
+- `GCP_SA_KEY`: Google Cloud service account key
+- `GCP_PROJECT_ID`: Google Cloud project ID  
+- `MICROSERVICE_URL`: Target microservice URL
+
+## **Need More Details?**
+
+- **Testing**: [`tests/README.md`](tests/README.md) - Comprehensive testing guide
+- **Client Usage**: [`mcp-clients/README.md`](mcp-clients/README.md) - Complete client guide
+- **Team Setup**: [`docs/TEAM_ACCESS.md`](docs/TEAM_ACCESS.md) - Team authentication
+- **Configuration**: [`config/MCP_CONFIGURATION.md`](config/MCP_CONFIGURATION.md) - MCP setup
 
 ---
 
-**Your MCP server is ready for testing and integration!**
-
-For questions or issues, check the documentation in the `docs/` folder or test with the clients in `mcp-clients/`.
+**Ready to test?** Start with the web client for easiest experience, or dive into the detailed guides above!

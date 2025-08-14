@@ -261,10 +261,102 @@ watch -n 30 './tests/validate_mcp.sh'
 
 ---
 
+## 🧪 **Manual Protocol Testing**
+
+### **Local Server Testing:**
+```bash
+# Set environment variables
+export MICROSERVICE_URL="https://product-service-256110662801.europe-west3.run.app"
+export PORT="8080"
+
+# Run the server
+go run main.go
+
+# Test in another terminal:
+
+# 1. Initialize connection
+curl -X POST http://localhost:8080/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+      "protocolVersion": "2024-11-05",
+      "capabilities": {},
+      "clientInfo": {"name": "test-client", "version": "1.0.0"}
+    }
+  }'
+
+# 2. List available tools
+curl -X POST http://localhost:8080/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "tools/list"
+  }'
+
+# 3. Call a tool
+curl -X POST http://localhost:8080/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "tools/call",
+    "params": {
+      "name": "create_product",
+      "arguments": {
+        "name": "MacBook Pro",
+        "category": "Electronics",
+        "price": 2499
+      }
+    }
+  }'
+```
+
+### **Production Server Testing:**
+```bash
+# Test initialize
+curl -X POST https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+      "protocolVersion": "2024-11-05",
+      "capabilities": {},
+      "clientInfo": {"name": "test-client", "version": "1.0.0"}
+    }
+  }'
+
+# Test tool call
+curl -X POST https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "tools/call",
+    "params": {
+      "name": "create_product",
+      "arguments": {
+        "name": "Apple iPad Pro",
+        "category": "Electronics",
+        "price": 1299
+      }
+    }
+  }'
+```
+
+---
+
 **Choose your testing method based on your needs:**
 - **Developers** → `run_tests.sh` and `validate_mcp.sh`
 - **QA/Testing** → Postman collection
-- **Learning/Debug** → `test_commands.sh`
+- **Learning/Debug** → `test_commands.sh` + Manual Protocol Testing
 - **Integration** → `test_mcp_requests.json`
 
 All testing tools work independently and can be used together for comprehensive testing! 🚀

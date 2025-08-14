@@ -2,33 +2,105 @@
 
 This guide helps you configure your MCP server to work with GitHub Copilot and other MCP clients using natural language commands.
 
-## Files Created
+## 🎯 **Quick Configuration**
 
-1. **`mcp.json`** - Full configuration with tool descriptions and examples
-2. **`mcp-simple.json`** - Simplified configuration
+### **GitHub Copilot Setup:**
+```bash
+# Copy the appropriate config
+cp config/mcp.json ~/.config/claude/claude_desktop_config.json
+
+# Restart Claude Desktop and ask:
+# "Show me all products in the store"
+```
+
+### **Custom MCP Client Setup:**
+- **Server URL**: `https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp`
+- **Protocol**: MCP JSON-RPC 2.0
+- **Authentication**: Google Cloud Bearer tokens
+
+## 📋 **Configuration Files**
+
+1. **`mcp.json`** - Full configuration with tool descriptions
+2. **`mcp-simple.json`** - Minimal configuration
 3. **`mcp-local.json`** - Local development configuration
 
-## Configuration Options
+## 🔧 **MCP Protocol Implementation**
 
-### Option 1: GitHub Copilot Configuration
+### **Protocol Compliance**
+This server implements **MCP JSON-RPC 2.0 Protocol** with required methods:
 
-Add this to your GitHub Copilot settings or MCP client configuration:
-
+#### **1. `initialize`** - Handshake
 ```json
 {
-  "servers": {
-    "ravi-mcp-server": {
-      "command": "curl",
-      "args": [
-        "-X", "POST",
-        "https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp",
-        "-H", "Content-Type: application/json",
-        "-H", "Authorization: Bearer $(gcloud auth print-identity-token)",
-        "-d", "@-"
-      ]
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "initialize",
+  "params": {
+    "protocolVersion": "2024-11-05",
+    "capabilities": {},
+    "clientInfo": {"name": "test-client", "version": "1.0.0"}
+  }
+}
+```
+
+#### **2. `tools/list`** - Available Tools
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "tools/list"
+}
+```
+
+#### **3. `tools/call`** - Execute Tool
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "method": "tools/call",
+  "params": {
+    "name": "create_product",
+    "arguments": {
+      "name": "MacBook Pro",
+      "category": "Electronics", 
+      "price": 2499
     }
   }
 }
+```
+
+## 🛠️ **Available Tools**
+
+| Tool Name | Description | Required Parameters |
+|-----------|-------------|-------------------|
+| `welcome_message` | Get welcome message | None |
+| `health_check` | Check service health | None |
+| `create_product` | Create new product | `name`, `category`, `price` |
+| `get_product` | Get product by ID | `id` |
+| `update_product` | Update existing product | `id` + optional fields |
+| `delete_product` | Delete product | `id` |
+| `list_products` | Get all products | None |
+
+## ⚙️ **Environment Variables**
+
+- `MICROSERVICE_URL`: Target microservice URL
+- `PORT`: Server port (defaults to 8080)
+
+## 🔍 **Troubleshooting**
+
+### **Common Issues:**
+
+1. **Method not found**: Use exact method names (`initialize`, `tools/list`, `tools/call`)
+2. **Invalid JSON-RPC**: Always include `"jsonrpc": "2.0"` and unique `id`
+3. **Authentication errors**: Verify GCP service account permissions
+4. **Microservice connectivity**: Check `MICROSERVICE_URL` environment variable
+
+### **GitHub Copilot Integration:**
+1. Configure MCP server URL in Copilot settings
+2. Copilot automatically discovers tools via MCP protocol
+3. Use natural language: "Create a new product called 'iPhone 15'"
+
+For testing examples and deployment commands, see [`tests/README.md`](../tests/README.md) and main project README.
 ```
 
 ### Option 2: Direct HTTP Configuration

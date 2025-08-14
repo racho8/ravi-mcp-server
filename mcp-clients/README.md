@@ -2,186 +2,227 @@
 
 This folder contains **two independent client interfaces** for testing your MCP server. Both clients connect to the same server but provide different user experiences.
 
-## 🎯 **Overview**
+## 🎯 **Quick Start Guide**
 
-| Client | Interface | Best For | Users |
-|--------|-----------|----------|-------|
-| **Python Client** | Command Line | Development, Automation, CI/CD | Developers, Scripts |
-| **Web Client** | Browser GUI | Demos, Teams, Interactive Testing | Everyone |
-
-## 🐍 **Python Client** (`mcp_test_client.py`)
-
-### **Quick Start:**
+### **Option 1: Web Client (Easiest)**
 ```bash
-# Navigate to clients folder
-cd mcp-clients
+# Open in browser
+open mcp_web_client.html  # macOS
+# xdg-open mcp_web_client.html   # Linux  
+# start mcp_web_client.html      # Windows
 
+# Get your token and paste in web client
+gcloud auth print-access-token
+```
+
+### **Option 2: Python Client (Developers)**
+```bash
 # Run with natural language commands
 python mcp_test_client.py "list all products"
 python mcp_test_client.py "health check"
+```
+
+## 📊 **Client Comparison**
+
+| Feature | **Web Client** | **Python Client** |
+|---------|----------------|-------------------|
+| **Interface** | Browser GUI | Command Line |
+| **Best For** | Demos, Teams, Non-technical users | Development, Automation, Scripts |
+| **Authentication** | Manual token paste | Auto via gcloud |
+| **Output Format** | Visual tables + JSON toggle | Clean JSON |
+| **Prerequisites** | Browser, gcloud auth | Python, gcloud CLI |
+| **Learning Curve** | Beginner-friendly | Developer-oriented |
+
+---
+
+## 🌐 **Web Client Guide** (`mcp_web_client.html`)
+
+### **Step-by-Step Usage:**
+
+#### 1. **Open the Web Client**
+```bash
+cd mcp-clients
+open mcp_web_client.html
+```
+
+#### 2. **Get Authentication Token**
+```bash
+gcloud auth print-access-token
+```
+
+#### 3. **Authenticate in Browser**
+1. Copy the access token from terminal
+2. Paste into "Access Token" field in web client
+3. Click "Test Auth" to verify connection
+4. Look for "✅ Authentication successful!"
+
+#### 4. **Test Your Server**
+
+**Quick Actions (Click and Go):**
+- **📦 List Products** - Shows all products
+- **❤️ Health Check** - Server status  
+- **👋 Welcome Message** - Welcome response
+- **🔧 Show Available Tools** - List all MCP tools
+
+**Custom Tool Calls:**
+1. Select tool from dropdown menu
+2. Enter arguments in JSON format (if needed)
+3. Click "Call Tool" to execute
+
+### **Web Client Features:**
+
+#### **Dual Output Modes:**
+- **📊 Visual Mode**: Formatted tables, colors, timestamps (Default)
+- **📋 JSON Mode**: Raw technical data for debugging
+- **Toggle anytime**: Switch between modes instantly
+
+#### **Example Usage Scenarios:**
+
+**Create a Product:**
+1. Select "create_product" from dropdown
+2. Enter: `{"name":"MacBook Pro","category":"Electronics","price":2499}`
+3. Click "Call Tool"
+
+**Update Product Price:**
+1. Select "update_product" 
+2. Enter: `{"id":"PRODUCT_ID","price":1999}`
+3. Click "Call Tool"
+
+#### **Tool Arguments Reference:**
+
+| Tool | Arguments | Example |
+|------|-----------|---------|
+| `list_products` | None | `{}` |
+| `create_product` | name, category, price | `{"name":"iPhone","category":"Electronics","price":999}` |
+| `get_product` | id | `{"id":"abc123"}` |
+| `update_product` | id + fields to update | `{"id":"abc123","price":899}` |
+| `delete_product` | id | `{"id":"abc123"}` |
+| `health_check` | None | `{}` |
+
+---
+
+## 🐍 **Python Client Guide** (`mcp_test_client.py`)
+
+### **Quick Commands:**
+```bash
+cd mcp-clients
+
+# Natural language interface
+python mcp_test_client.py "list all products"
+python mcp_test_client.py "health check" 
 python mcp_test_client.py "show available tools"
+python mcp_test_client.py "welcome message"
 ```
 
 ### **Features:**
-- ✅ **Natural Language Input**: Type commands in plain English
-- ✅ **Auto-Authentication**: Automatically gets GCP token via `gcloud`
-- ✅ **Terminal Output**: Clean JSON responses in command line
+- ✅ **Natural Language Input**: Plain English commands
+- ✅ **Auto-Authentication**: Gets GCP token automatically via `gcloud`
+- ✅ **Terminal Output**: Clean JSON responses
 - ✅ **Script-Friendly**: Perfect for automation and CI/CD
 - ✅ **No Browser Required**: Works in headless environments
 
 ### **Prerequisites:**
 ```bash
-# Install Google Cloud SDK
+# Install Google Cloud SDK and authenticate
 gcloud auth login
 gcloud config set project YOUR_PROJECT_ID
 ```
 
-### **Available Commands:**
-- `"list all products"` → Call list_products tool
-- `"health check"` → Check server health
-- `"welcome message"` → Get welcome message
-- `"show available tools"` → List all MCP tools
-
 ---
 
-## 🌐 **Web Client** (`mcp_web_client.html`)
-
-### **Quick Start:**
-```bash
-# Open in browser (choose one):
-open mcp_web_client.html           # macOS
-xdg-open mcp_web_client.html       # Linux
-start mcp_web_client.html          # Windows
-
-# Or drag the file into your browser
-```
-
-### **Features:**
-- ✅ **Dual Output Formats**: Visual tables + Raw JSON
-- ✅ **Interactive GUI**: Point-and-click interface
-- ✅ **Live Authentication**: Test connection in real-time
-- ✅ **Professional Styling**: Perfect for demos and presentations
-- ✅ **Mobile-Friendly**: Works on any device with a browser
-- ✅ **Team-Friendly**: No command-line skills required
-
-### **Authentication Setup:**
-1. **Get your token**: `gcloud auth print-access-token`
-2. **Paste in web client**: Copy token to the "Access Token" field
-3. **Test connection**: Click "Test Auth" button
-4. **Start testing**: Use quick actions or custom tool calls
-
-### **Output Modes:**
-- **📊 Visual Mode**: Formatted tables, colors, timestamps (Default)
-- **📋 JSON Mode**: Raw technical data for debugging
-- **Toggle anytime**: Switch between modes with toolbar buttons
-
----
-
-## 🔄 **How They Relate**
+## 🔄 **How Both Clients Work Together**
 
 ### **Completely Independent:**
 - ✅ **No shared dependencies** - run separately
-- ✅ **Different authentication** - Python auto-gets token, Web requires manual input
-- ✅ **Separate processes** - can run simultaneously
-- ✅ **No data sharing** - each maintains its own state
+- ✅ **Different authentication approaches**
+- ✅ **Can run simultaneously** without interference
+- ✅ **No data sharing** between clients
 
 ### **Same Backend:**
 - 🎯 **Same MCP Server**: `https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp`
 - 🎯 **Same Protocol**: JSON-RPC 2.0 format
-- 🎯 **Same Tools**: list_products, health_check, welcome_message, etc.
-- 🎯 **Same Authentication**: GCP Bearer tokens
+- 🎯 **Same Tools**: All CRUD operations + health checks
+- 🎯 **Same Data**: Both see same products and responses
 
-### **Choose Based on Use Case:**
-
-#### Use **Python Client** for:
-- 🔧 **Development workflows** and debugging
-- 🤖 **Automated testing** and CI/CD pipelines
-- ⚡ **Quick command-line checks**
-- 📝 **Scripting and batch operations**
+### **Choose Based on Your Needs:**
 
 #### Use **Web Client** for:
-- 👥 **Team demonstrations** and stakeholder meetings
-- 🎨 **Interactive testing** with visual feedback
-- 📊 **Business user access** (no technical skills needed)
-- 🚀 **Professional presentations** and demos
+- � **Team demos** and stakeholder presentations
+- 🎨 **Interactive testing** with visual feedback  
+- 📊 **Business user access** (no command-line skills needed)
+- � **Quick testing** and exploration
+
+#### Use **Python Client** for:
+- � **Development workflows** and debugging
+- 🤖 **Automated testing** and CI/CD pipelines
+- ⚡ **Quick command-line checks**
+- � **Scripting** and batch operations
 
 ---
 
-## 🚀 **Quick Test Guide**
+## 🚀 **Complete Test Workflow**
 
-### **Test Both Clients:**
+### **Test Both Clients (5 minutes):**
 
-1. **Authenticate both**:
+1. **Setup Authentication:**
    ```bash
-   # Get token for both clients
-   gcloud auth print-access-token
+   gcloud auth login
+   gcloud auth print-access-token  # Copy this token
    ```
 
-2. **Test Python client**:
+2. **Test Python Client:**
    ```bash
    cd mcp-clients
    python mcp_test_client.py "health check"
    python mcp_test_client.py "list all products"
    ```
 
-3. **Test Web client**:
+3. **Test Web Client:**
    - Open `mcp_web_client.html` in browser
    - Paste token and click "Test Auth"
-   - Try quick actions: "Health Check", "List Products"
+   - Try "List Products" and "Health Check" buttons
 
-4. **Verify independence**:
-   - Create product in Python client
-   - View it in Web client (both see same data)
-   - Both work simultaneously without interference
-
----
-
-## 📁 **File Structure**
-
-```
-mcp-clients/
-├── README.md                 # This guide
-├── mcp_test_client.py       # Python command-line client
-├── mcp_web_client.html      # Browser-based GUI client
-└── examples/                # Usage examples (future)
-```
+4. **Verify They're Independent:**
+   - Create product in Python: `python mcp_test_client.py "create product"`
+   - View it in Web client (refresh and list products)
+   - Both see the same data but work independently
 
 ---
 
 ## 🔧 **Troubleshooting**
 
-### **Common Issues:**
-
-#### Authentication Errors:
+### **Authentication Issues:**
 ```bash
-# Refresh your GCP authentication
+# Refresh GCP authentication
 gcloud auth login
 gcloud auth print-access-token
 ```
 
-#### Python Client Issues:
+### **Python Client Problems:**
 ```bash
-# Check gcloud is installed
-gcloud --version
-
-# Check Python version (3.6+)
-python --version
+# Check prerequisites
+gcloud --version    # Should work
+python --version    # Should be 3.6+
 ```
 
-#### Web Client Issues:
-- **CORS errors**: Server now supports CORS, try different browser
+### **Web Client Issues:**
 - **Token expired**: Get fresh token with `gcloud auth print-access-token`
-- **Connection failed**: Verify server URL and network connection
+- **CORS errors**: Try different browser or use Python client
+- **Connection failed**: Verify server URL and network
 
 ---
 
-## 📖 **Additional Documentation**
+## � **File Structure**
 
-- **Server Implementation**: See `main.go` in root directory
-- **Team Access Guide**: See `docs/TEAM_ACCESS.md`
-- **Web Client Details**: See `docs/WEB_CLIENT_GUIDE.md`
-- **Deployment Guide**: See `README.md` in root directory
+```
+mcp-clients/
+├── README.md                 # This complete guide
+├── mcp_test_client.py       # Python CLI client
+└── mcp_web_client.html      # Browser GUI client
+```
 
 ---
 
-**Both clients provide full access to your MCP server - choose the interface that best fits your workflow!** 🎯
+**Both clients provide full access to your MCP server - choose the interface that fits your workflow!** 🎯
+
+For server details and architecture, see the main project README.md in the root directory.
