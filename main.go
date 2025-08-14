@@ -448,6 +448,24 @@ func sendJSONRPCError(w http.ResponseWriter, id interface{}, code int, message s
 	json.NewEncoder(w).Encode(response)
 }
 
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Set CORS headers
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		// Handle preflight OPTIONS request
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	log.Printf("MICROSERVICE_URL: %s", os.Getenv("MICROSERVICE_URL"))
 	log.Printf("PORT: %s", os.Getenv("PORT"))
@@ -461,6 +479,25 @@ func main() {
 	}
 
 	router := mux.NewRouter()
+	
+	// Add CORS middleware
+	router.Use(corsMiddleware)
+	
+	// Health check endpoint for monitoring and testing
+	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status": "healthy",
+			"service": "ravi-mcp-server",
+		})
+	}).Methods("GET")
+	
+	// Add OPTIONS handler for preflight requests
+	router.HandleFunc("/mcp", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}).Methods("OPTIONS")
+	
 	router.HandleFunc("/mcp", mcpHandler(config)).Methods("POST")
 
 	log.Printf("Starting MCP server on port %s", config.Port)

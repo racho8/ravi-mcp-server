@@ -1,258 +1,230 @@
-# MCP (Model Context Protocol) Server
+# Ravi MCP Server
 
-A Go-based MCP server that implements the **MCP JSON-RPC 2.0 Protocol** to provide a unified interface for interacting with microservices using standardized tool calls. This server is designed to run on Google Cloud Run and interfaces with other microservices while being compatible with Copilot agents.
+A **Model Context Protocol (MCP)** server implementation in Go that provides product management capabilities. This server follows the MCP JSON-RPC 2.0 specification and is deployed on Google Cloud Run.
 
-## Overview
+## **Quick Start**
 
-The MCP Server acts as an intermediary layer that follows the official MCP JSON-RPC 2.0 specification, enabling seamless integration with AI agents like GitHub Copilot. It standardizes communication with underlying microservices through a tool-based interface where each tool represents a specific microservice operation.
-
-## MCP Protocol Compliance
-
-This implementation follows the **MCP JSON-RPC 2.0 Protocol** specification with the following required methods:
-
-### 1. `initialize`
-Initial handshake between client and server to establish capabilities and protocol version.
-
-### 2. `tools/list` 
-Returns all available tools that the server can execute.
-
-### 3. `tools/call`
-Executes a specific tool with provided arguments.
-
-## Features
-
-- ✅ **Full MCP JSON-RPC 2.0 Protocol compliance**
-- ✅ **Standardized error handling with JSON-RPC error codes**
-- ✅ **Tool-based API interface**
-- ✅ **Integration with Google Cloud Run**
-- ✅ **Authentication support with service account tokens**
-- ✅ **Configurable microservice endpoints**
-- ✅ **Automatic token forwarding to microservices**
-- ✅ **Compatible with GitHub Copilot and other MCP clients**
-
-## Available Tools
-
-The server provides the following tools that map to microservice endpoints:
-
-| Tool Name | Description | Required Parameters |
-|-----------|-------------|-------------------|
-| `welcome_message` | Get welcome message from the product service | None |
-| `health_check` | Check product service health | None |
-| `create_product` | Create a new product | `name`, `category`, `price` |
-| `get_product` | Retrieve a product by ID | `id` |
-| `update_product` | Update an existing product | `id` (+ optional fields) |
-| `delete_product` | Delete a product | `id` |
-| `list_products` | Get all products | None |
-
-## API Endpoints
-
-- `POST /mcp`: Main MCP JSON-RPC 2.0 endpoint
-
-## Protocol Usage Examples
-
-### 1. Initialize Connection
+### **Test the Server:**
 ```bash
-curl -X POST https://your-server/mcp \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "initialize",
-    "params": {
-      "protocolVersion": "2024-11-05",
-      "capabilities": {},
-      "clientInfo": {
-        "name": "your-client",
-        "version": "1.0.0"
-      }
-    }
-  }'
+# Navigate to testing clients
+cd mcp-clients
+
+# Option 1: Python client (command line)
+python mcp_test_client.py "list all products"
+
+# Option 2: Web client (browser)
+open mcp_web_client.html
 ```
 
-### 2. List Available Tools
+### **Authentication:**
 ```bash
-curl -X POST https://your-server/mcp \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 2,
-    "method": "tools/list"
-  }'
+# Get your access token
+gcloud auth print-access-token
 ```
 
-### 3. Call a Tool
-```bash
-curl -X POST https://your-server/mcp \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 3,
-    "method": "tools/call",
-    "params": {
-      "name": "create_product",
-      "arguments": {
-        "name": "MacBook Pro",
-        "category": "Electronics",
-        "price": 2499
-      }
-    }
-  }'
+## **Project Structure**
+
+```
+ravi-mcp-server/
+├── main.go                   # Core MCP server implementation
+├── go.mod, go.sum           # Go dependencies
+├── Dockerfile               # Container configuration
+│
+├── mcp-clients/             # Testing Interfaces
+│   ├── README.md            # Client usage guide
+│   ├── mcp_test_client.py   # Python command-line client
+│   └── mcp_web_client.html  # Browser-based GUI client
+│
+├── config/                  # MCP configurations
+│   ├── mcp.json            # Full configuration
+│   ├── mcp-local.json      # Local development
+│   └── mcp-simple.json     # Minimal config
+│
+├── docs/                    # Documentation
+│   ├── architecture-diagram.svg    # System architecture diagram
+│   ├── MCP_CONFIGURATION.md
+│   ├── TEAM_ACCESS.md
+│   ├── TESTING.md
+│   └── WEB_CLIENT_GUIDE.md
+│
+├── tests/                   # Complete Testing Suite
+│   ├── README.md            # Complete testing guide
+│   ├── POSTMAN_IMPORT.md    # Postman import instructions
+│   ├── postman_collection_v2.json  # Postman collection
+│   ├── run_tests.sh         # Automated test runner
+│   ├── test_commands.sh     # Manual cURL commands
+│   ├── test_mcp_requests.json # JSON test examples
+│   └── validate_mcp.sh      # MCP protocol validation
+│
+└── setup-go-env.sh          # Go environment setup script
 ```
 
-## Environment Variables
+## **Architecture Overview**
 
-- `MICROSERVICE_URL`: URL of the target microservice
-- `PORT`: Server port (defaults to 8080)
+The Ravi MCP Server follows a distributed microservices architecture deployed on Google Cloud Platform. Below is the complete system architecture showing data flow from MCP clients to the database:
 
-## Testing Your MCP Server
+![Architecture Diagram](docs/architecture-diagram.svg)
 
-Use the provided test file `test_mcp_requests.json` for comprehensive testing examples.
+### **Component Overview:**
 
-### Local Testing
+**Local Environment:**
+- **MCP Clients**: Python CLI, Web Browser, and Claude Desktop integration
+- **Authentication**: Google Cloud IAM with JWT tokens
+
+**Google Cloud Platform:**
+- **Ravi MCP Server**: Go-based JSON-RPC 2.0 server (Cloud Run)
+- **Product Service**: Business logic microservice (Cloud Run)
+- **Cloud Datastore**: NoSQL database for product data
+
+### **Data Flow:**
+1. **Client Authentication**: Users authenticate via `gcloud auth` to get JWT tokens
+2. **MCP Protocol**: Clients send JSON-RPC 2.0 requests with Bearer tokens
+3. **Request Routing**: MCP Server validates tokens and routes to Product Service
+4. **Business Logic**: Product Service processes CRUD operations
+5. **Data Persistence**: Service interacts with Cloud Datastore for data storage
+6. **Response Chain**: Results flow back through the same path to clients
+
+## **MCP Tools Available**
+
+| Tool | Description | Arguments |
+|------|-------------|-----------|
+| `list_products` | Get all products in store | None |
+| `create_product` | Create new product | name, category, price |
+| `get_product` | Get specific product | id |
+| `update_product` | Update product details | id, (fields to update) |
+| `delete_product` | Remove product | id |
+| `health_check` | Server health status | None |
+| `welcome_message` | Welcome message | None |
+
+## **Server Features**
+
+- **MCP JSON-RPC 2.0 Compliant** - Full protocol implementation
+- **Google Cloud Run Deployment** - Scalable and secure
+- **CORS Support** - Works with browser clients
+- **JWT Authentication** - Google Cloud IAM integration
+- **Product Management** - Complete CRUD operations
+- **Health Monitoring** - Built-in health checks
+
+## **Development**
+
+### **Go Environment Setup:**
+This project requires Go 1.23+ and uses specific version configuration to avoid compiler/toolchain mismatches.
+
 ```bash
-# Set environment variables
+# Quick setup (recommended)
+./setup-go-env.sh
+
+# Manual setup
+export GOROOT="/opt/homebrew/Cellar/go/1.23.4/libexec"  # Adjust version as needed
+export PATH="$GOROOT/bin:$PATH"
+
+# Verify setup
+go version  # Should show go1.23.4 or later
+```
+
+### **Local Development:**
+```bash
+# Install dependencies
+go mod download
+
+# Run tests
+go test -v ./...
+
+# Run server locally
 export MICROSERVICE_URL="https://product-service-256110662801.europe-west3.run.app"
-export PORT="8080"
-
-# Run the server
 go run main.go
 
-# Test initialize in another terminal
-curl -X POST http://localhost:8080/mcp \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "initialize",
-    "params": {
-      "protocolVersion": "2024-11-05",
-      "capabilities": {},
-      "clientInfo": {"name": "test-client", "version": "1.0.0"}
-    }
-  }'
+# Test with local config
+# Update config/mcp-local.json with localhost URL
 ```
 
-## Deployment
+### **Deploy to Cloud Run:**
 
-The application is configured for deployment to Google Cloud Run using GitHub Actions. The deployment workflow:
-1. Builds a Docker container
-2. Pushes to Google Artifact Registry  
-3. Deploys to Cloud Run
+## **Testing**
 
-### Required Secrets
-
-- `GCP_SA_KEY`: Google Cloud service account key
-- `GCP_PROJECT_ID`: Google Cloud project ID
-- `MICROSERVICE_URL`: Target microservice URL
-
-## GitHub Copilot Integration
-
-This MCP server is fully compatible with GitHub Copilot and other MCP clients. Once deployed, you can:
-
-1. **Configure Copilot**: Add your MCP server URL to Copilot's MCP server configuration
-2. **Use Tools**: Copilot will automatically discover and use your tools through the standard MCP protocol
-3. **Natural Language**: Ask Copilot to perform operations like "create a new product" or "list all products"
-
-### Example Copilot Usage
-```
-User: "Create a new product called 'iPhone 15' in the Electronics category for $999"
-Copilot: Uses the create_product tool via MCP protocol to call your microservice
-```
-
-## Key Improvements Made
-
-### 1. ✅ **Proper JSON-RPC 2.0 Protocol**
-- Added correct `jsonrpc: "2.0"` field
-- Implemented proper `id` handling  
-- Added standard error codes (-32700, -32600, -32601, -32602, -32603)
-
-### 2. ✅ **Standard MCP Methods**
-- `initialize`: Proper handshake with capabilities negotiation
-- `tools/list`: Returns tool schemas with `inputSchema` 
-- `tools/call`: Executes tools with proper argument handling
-
-### 3. ✅ **Enhanced Error Handling**
-- JSON-RPC compliant error responses
-- Proper error codes and messages
-- Validation of required parameters
-
-### 4. ✅ **Improved Tool Response Format**
-- Returns structured `ToolCallResult` with `content` array
-- Supports both text and structured data responses
-- Compatible with MCP client expectations
-
-## Utility Commands
-
-### Update Cloud Run Environment Variables
+### **Quick Tests:**
 ```bash
-gcloud run services update ravi-mcp-server \
-    --region=europe-west3 \
-    --set-env-vars "MICROSERVICE_URL=https://product-service-256110662801.europe-west3.run.app"
+# Python client (developers)
+cd mcp-clients
+python mcp_test_client.py "health check"
+
+# Web client (everyone)
+open mcp-clients/mcp_web_client.html
 ```
 
-### Check Current Environment Variables
+### **Comprehensive Testing:**
 ```bash
-gcloud run services describe ravi-mcp-server \
-  --region=europe-west3 \
-  --format="value(spec.template.spec.containers[0].env)"
+# See complete testing guide
+cd tests
+cat README.md
+
+# Run all tests
+./run_tests.sh
+
+# Validate MCP compliance
+./validate_mcp.sh
+
+# Postman collection
+# See POSTMAN_IMPORT.md for import instructions
 ```
 
-### Add Public Access (if needed)
+## **Team Access**
+
+For team members to test the server, see detailed instructions in:
+- **`docs/TEAM_ACCESS.md`** - Authentication setup for team members
+- **`mcp-clients/README.md`** - How to use both testing clients
+
+### **Quick Team Setup:**
+1. **Get access token**: `gcloud auth print-access-token`
+2. **Choose client**: Python (developers) or Web (everyone)
+3. **Start testing**: Follow client-specific instructions
+
+## **Integration**
+
+### **Claude Desktop Integration:**
 ```bash
-gcloud run services add-iam-policy-binding ravi-mcp-server \
-  --region=europe-west3 \
-  --member="domain:your-organization-domain.com" \
-  --role="roles/run.invoker"
+# Copy configuration
+cp config/mcp.json ~/.config/claude/claude_desktop_config.json
+
+# Restart Claude Desktop
+# Ask: "Show me all products in the store"
 ```
 
-### Test Production Server
+### **Custom Integration:**
+- **Server URL**: `https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp`
+- **Protocol**: MCP JSON-RPC 2.0
+- **Authentication**: Google Cloud Bearer tokens
+- **Content-Type**: `application/json`
+
+## **Documentation**
+
+- **`mcp-clients/README.md`** - Complete client usage guide
+- **`docs/MCP_CONFIGURATION.md`** - MCP setup instructions
+- **`docs/TEAM_ACCESS.md`** - Team authentication guide
+- **`docs/TESTING.md`** - Testing procedures
+- **`docs/WEB_CLIENT_GUIDE.md`** - Web client details
+
+## **Server Endpoint**
+
+**Production URL**: `https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp`
+
+### **Health Check:**
 ```bash
-# Test initialize
-curl -X POST https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "initialize",
-    "params": {
-      "protocolVersion": "2024-11-05",
-      "capabilities": {},
-      "clientInfo": {"name": "test-client", "version": "1.0.0"}
-    }
-  }'
-
-# Test tool call
-curl -X POST https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 3,
-    "method": "tools/call",
-    "params": {
-      "name": "create_product",
-      "arguments": {
-        "name": "Apple iPad Pro",
-        "category": "Electronics",
-        "price": 1299
-      }
-    }
-  }'
+curl -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"health_check","arguments":{}}}'
 ```
 
-## Troubleshooting
+## **Getting Started**
 
-### Common Issues
+1. **Authenticate**: `gcloud auth login`
+2. **Test server**: `cd mcp-clients && python mcp_test_client.py "health check"`
+3. **Explore tools**: Use web client for interactive testing
+4. **Read docs**: Check `docs/` for detailed guides
+5. **Integrate**: Use with Claude Desktop or custom applications
 
-1. **Method not found**: Ensure you're using exact method names: `initialize`, `tools/list`, `tools/call`
-2. **Invalid JSON-RPC**: Always include `"jsonrpc": "2.0"` and unique `id` field
-3. **Authentication errors**: Verify your GCP service account has proper permissions
-4. **Microservice connectivity**: Check `MICROSERVICE_URL` environment variable
+---
 
-### Debug Logs
-The server provides detailed logging for:
-- Incoming JSON-RPC requests
-- Tool execution details  
-- Microservice call attempts
-- Error conditions
+**Your MCP server is ready for testing and integration!**
+
+For questions or issues, check the documentation in the `docs/` folder or test with the clients in `mcp-clients/`.

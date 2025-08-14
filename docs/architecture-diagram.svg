@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients for Google Cloud styling -->
+    <linearGradient id="gcpBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4285F4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1A73E8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gcpGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#34A853;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#137333;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gcpYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FBBC04;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F9AB00;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gcpRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#EA4335;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D33B01;stop-opacity:1" />
+    </linearGradient>
+    <!-- Drop shadow filter -->
+    <filter id="dropshadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="800" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="600" y="30" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="24" font-weight="bold" fill="#202124">
+    Ravi MCP Server Architecture
+  </text>
+  
+  <!-- Local Environment Boundary -->
+  <rect x="50" y="80" width="300" height="680" fill="#e8f0fe" stroke="#4285f4" stroke-width="2" stroke-dasharray="5,5" rx="10"/>
+  <text x="200" y="105" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="16" font-weight="bold" fill="#1a73e8">
+    Local Development Environment
+  </text>
+  
+  <!-- Google Cloud Platform Boundary -->
+  <rect x="400" y="80" width="750" height="680" fill="#fff3e0" stroke="#ff8f00" stroke-width="2" rx="10"/>
+  <text x="775" y="105" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="16" font-weight="bold" fill="#e65100">
+    Google Cloud Platform
+  </text>
+  
+  <!-- Cloud Run Boundary -->
+  <rect x="430" y="140" width="690" height="300" fill="#e3f2fd" stroke="#1976d2" stroke-width="1" stroke-dasharray="3,3" rx="8"/>
+  <text x="775" y="165" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="#1976d2">
+    Google Cloud Run
+  </text>
+  
+  <!-- Database Boundary -->
+  <rect x="430" y="500" width="690" height="220" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1" stroke-dasharray="3,3" rx="8"/>
+  <text x="775" y="525" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="#7b1fa2">
+    Google Cloud Datastore
+  </text>
+  
+  <!-- Local MCP Clients -->
+  <!-- Python Client -->
+  <rect x="80" y="150" width="120" height="80" fill="url(#gcpGreen)" rx="8" filter="url(#dropshadow)"/>
+  <text x="140" y="175" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="12" font-weight="bold" fill="white">
+    Python Client
+  </text>
+  <text x="140" y="195" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="white">
+    mcp_test_client.py
+  </text>
+  <text x="140" y="210" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="white">
+    Command Line
+  </text>
+  
+  <!-- Web Client -->
+  <rect x="80" y="260" width="120" height="80" fill="url(#gcpBlue)" rx="8" filter="url(#dropshadow)"/>
+  <text x="140" y="285" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="12" font-weight="bold" fill="white">
+    Web Client
+  </text>
+  <text x="140" y="305" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="white">
+    mcp_web_client.html
+  </text>
+  <text x="140" y="320" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="white">
+    Browser GUI
+  </text>
+  
+  <!-- Claude Desktop -->
+  <rect x="80" y="370" width="120" height="80" fill="url(#gcpYellow)" rx="8" filter="url(#dropshadow)"/>
+  <text x="140" y="395" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="12" font-weight="bold" fill="white">
+    Claude Desktop
+  </text>
+  <text x="140" y="415" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="white">
+    MCP Integration
+  </text>
+  <text x="140" y="430" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="white">
+    JSON-RPC 2.0
+  </text>
+  
+  <!-- MCP Proxy/Router -->
+  <rect x="460" y="200" width="150" height="100" fill="url(#gcpRed)" rx="8" filter="url(#dropshadow)"/>
+  <text x="535" y="225" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="white">
+    Ravi MCP Server
+  </text>
+  <text x="535" y="245" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="11" fill="white">
+    Go Application
+  </text>
+  <text x="535" y="260" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="white">
+    Port: 8080
+  </text>
+  <text x="535" y="275" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="white">
+    JSON-RPC 2.0
+  </text>
+  <text x="535" y="290" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="white">
+    JWT Auth
+  </text>
+  
+  <!-- Product Service -->
+  <rect x="750" y="200" width="150" height="100" fill="url(#gcpBlue)" rx="8" filter="url(#dropshadow)"/>
+  <text x="825" y="225" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="white">
+    Product Service
+  </text>
+  <text x="825" y="245" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="11" fill="white">
+    Microservice
+  </text>
+  <text x="825" y="260" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="white">
+    REST API
+  </text>
+  <text x="825" y="275" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="white">
+    CRUD Operations
+  </text>
+  <text x="825" y="290" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="white">
+    Business Logic
+  </text>
+  
+  <!-- Database -->
+  <rect x="650" y="560" width="250" height="120" fill="url(#gcpGreen)" rx="8" filter="url(#dropshadow)"/>
+  <text x="775" y="590" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
+    Cloud Datastore
+  </text>
+  <text x="775" y="615" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="12" fill="white">
+    NoSQL Database
+  </text>
+  <text x="775" y="635" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="11" fill="white">
+    Product Data Storage
+  </text>
+  <text x="775" y="655" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="11" fill="white">
+    Auto-scaling, High Availability
+  </text>
+  
+  <!-- Flow Arrows and Labels -->
+  
+  <!-- Client to MCP Server -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#34a853" />
+    </marker>
+  </defs>
+  
+  <!-- Python Client to MCP Server -->
+  <line x1="200" y1="190" x2="460" y2="230" stroke="#34a853" stroke-width="3" marker-end="url(#arrowhead)"/>
+  <text x="320" y="200" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="#137333">
+    HTTPS + JWT
+  </text>
+  
+  <!-- Web Client to MCP Server -->
+  <line x1="200" y1="300" x2="460" y2="250" stroke="#4285f4" stroke-width="3" marker-end="url(#arrowhead)"/>
+  <text x="320" y="285" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="#1a73e8">
+    HTTPS + CORS
+  </text>
+  
+  <!-- Claude Desktop to MCP Server -->
+  <line x1="200" y1="410" x2="460" y2="270" stroke="#fbbc04" stroke-width="3" marker-end="url(#arrowhead)"/>
+  <text x="320" y="350" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="#f9ab00">
+    MCP Protocol
+  </text>
+  
+  <!-- MCP Server to Product Service -->
+  <line x1="610" y1="250" x2="750" y2="250" stroke="#ea4335" stroke-width="4" marker-end="url(#arrowhead)"/>
+  <text x="680" y="240" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="11" font-weight="bold" fill="#d33b01">
+    REST API Calls
+  </text>
+  <text x="680" y="270" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="#d33b01">
+    HTTP/JSON
+  </text>
+  
+  <!-- Product Service to Database -->
+  <line x1="825" y1="300" x2="825" y2="560" stroke="#1976d2" stroke-width="4" marker-end="url(#arrowhead)"/>
+  <text x="875" y="430" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="11" font-weight="bold" fill="#1565c0">
+    Database
+  </text>
+  <text x="875" y="445" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="11" font-weight="bold" fill="#1565c0">
+    Operations
+  </text>
+  <text x="875" y="460" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="#1565c0">
+    CRUD Queries
+  </text>
+  
+  <!-- Data Flow Labels -->
+  <rect x="50" y="480" width="300" height="280" fill="#ffffff" stroke="#5f6368" stroke-width="1" rx="8"/>
+  <text x="200" y="505" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="#202124">
+    Data Flow Legend
+  </text>
+  
+  <!-- Legend Items -->
+  <circle cx="70" cy="525" r="8" fill="#34a853"/>
+  <text x="90" y="530" font-family="Google Sans, Arial, sans-serif" font-size="11" fill="#202124">
+    MCP JSON-RPC 2.0 Protocol
+  </text>
+  
+  <circle cx="70" cy="545" r="8" fill="#ea4335"/>
+  <text x="90" y="550" font-family="Google Sans, Arial, sans-serif" font-size="11" fill="#202124">
+    Internal REST API Communication
+  </text>
+  
+  <circle cx="70" cy="565" r="8" fill="#1976d2"/>
+  <text x="90" y="570" font-family="Google Sans, Arial, sans-serif" font-size="11" fill="#202124">
+    Database Operations
+  </text>
+  
+  <text x="70" y="595" font-family="Google Sans, Arial, sans-serif" font-size="12" font-weight="bold" fill="#202124">
+    Authentication Flow:
+  </text>
+  <text x="70" y="615" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="#5f6368">
+    1. Client authenticates with GCP
+  </text>
+  <text x="70" y="630" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="#5f6368">
+    2. Gets JWT token via gcloud auth
+  </text>
+  <text x="70" y="645" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="#5f6368">
+    3. Includes Bearer token in requests
+  </text>
+  <text x="70" y="660" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="#5f6368">
+    4. MCP Server validates with IAM
+  </text>
+  
+  <text x="70" y="690" font-family="Google Sans, Arial, sans-serif" font-size="12" font-weight="bold" fill="#202124">
+    MCP Tools Available:
+  </text>
+  <text x="70" y="710" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="#5f6368">
+    • Product CRUD operations
+  </text>
+  <text x="70" y="725" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="#5f6368">
+    • Health checks & monitoring
+  </text>
+  <text x="70" y="740" font-family="Google Sans, Arial, sans-serif" font-size="10" fill="#5f6368">
+    • Welcome message service
+  </text>
+  
+  <!-- URLs and Endpoints -->
+  <rect x="950" y="350" width="200" height="180" fill="#ffffff" stroke="#5f6368" stroke-width="1" rx="8"/>
+  <text x="1050" y="375" text-anchor="middle" font-family="Google Sans, Arial, sans-serif" font-size="12" font-weight="bold" fill="#202124">
+    Service Endpoints
+  </text>
+  
+  <text x="960" y="400" font-family="Google Sans, Arial, sans-serif" font-size="10" font-weight="bold" fill="#1a73e8">
+    MCP Server:
+  </text>
+  <text x="960" y="415" font-family="Google Sans, Arial, sans-serif" font-size="9" fill="#5f6368">
+    https://ravi-mcp-server-
+  </text>
+  <text x="960" y="427" font-family="Google Sans, Arial, sans-serif" font-size="9" fill="#5f6368">
+    256110662801.europe-west3
+  </text>
+  <text x="960" y="439" font-family="Google Sans, Arial, sans-serif" font-size="9" fill="#5f6368">
+    .run.app/mcp
+  </text>
+  
+  <text x="960" y="460" font-family="Google Sans, Arial, sans-serif" font-size="10" font-weight="bold" fill="#1a73e8">
+    Product Service:
+  </text>
+  <text x="960" y="475" font-family="Google Sans, Arial, sans-serif" font-size="9" fill="#5f6368">
+    https://product-service-
+  </text>
+  <text x="960" y="487" font-family="Google Sans, Arial, sans-serif" font-size="9" fill="#5f6368">
+    256110662801.europe-west3
+  </text>
+  <text x="960" y="499" font-family="Google Sans, Arial, sans-serif" font-size="9" fill="#5f6368">
+    .run.app
+  </text>
+  
+  <text x="960" y="520" font-family="Google Sans, Arial, sans-serif" font-size="10" font-weight="bold" fill="#5f6368">
+    Features:
+  </text>
+  <text x="960" y="535" font-family="Google Sans, Arial, sans-serif" font-size="9" fill="#5f6368">
+    • Auto-scaling
+  </text>
+  <text x="960" y="547" font-family="Google Sans, Arial, sans-serif" font-size="9" fill="#5f6368">
+    • High availability
+  </text>
+  <text x="960" y="559" font-family="Google Sans, Arial, sans-serif" font-size="9" fill="#5f6368">
+    • Load balancing
+  </text>
+  <text x="960" y="571" font-family="Google Sans, Arial, sans-serif" font-size="9" fill="#5f6368">
+    • Zero-downtime deploys
+  </text>
+  
+</svg>

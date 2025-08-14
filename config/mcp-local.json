@@ -1,6 +1,6 @@
 {
-  "mcpServers": {
-    "ravi-product-service-local": {
+  "servers": {
+    "ravi-mcp-server-local": {
       "command": "curl",
       "args": [
         "-X", "POST",

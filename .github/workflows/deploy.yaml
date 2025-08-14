@@ -1,4 +1,4 @@
-name: Build and Deploy to Cloud Run
+name: Test, Build and Deploy to Cloud Run
 
 on:
   push:
@@ -12,8 +12,84 @@ env:
   REPO_NAME: ravi-mcp-server-repo
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Run Tests
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23.4'
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run Go unit tests
+        run: go test -v ./...
+
+      - name: Install test tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl jq
+
+      - name: Start MCP server for testing
+        run: |
+          export MICROSERVICE_URL="https://product-service-256110662801.europe-west3.run.app"
+          go run main.go &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          
+          # Wait for server to start
+          echo "Waiting for server to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8080/health > /dev/null 2>&1; then
+              echo "Server is ready!"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 2
+          done
+          
+          # Verify server is responding
+          curl -f http://localhost:8080/health || (echo "Health check failed" && exit 1)
+
+      - name: Run MCP protocol validation
+        run: |
+          cd tests
+          chmod +x validate_mcp.sh
+          echo "🔍 Running MCP Protocol Validation..."
+          ./validate_mcp.sh || (echo "❌ MCP Protocol validation failed" && exit 1)
+
+      - name: Run comprehensive tests
+        run: |
+          cd tests
+          chmod +x run_tests.sh
+          echo "🧪 Running Comprehensive Test Suite..."
+          ./run_tests.sh || (echo "❌ Comprehensive tests failed" && exit 1)
+
+      - name: Test Summary
+        if: always()
+        run: |
+          echo "✅ All tests completed!"
+          echo "🚀 Ready for deployment"
+
+      - name: Stop server
+        if: always()
+        run: |
+          if [ ! -z "$SERVER_PID" ]; then
+            kill $SERVER_PID || true
+          fi
+          pkill -f "go run main.go" || true
+
   build-and-deploy:
     runs-on: ubuntu-latest
+    needs: test
+    name: Build and Deploy
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout code
@@ -28,7 +104,6 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ env.PROJECT_ID }}
-          export_default_credentials: true
 
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
@@ -47,5 +122,5 @@ jobs:
             --image ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:latest \
             --platform managed \
             --region ${{ env.REGION }} \
-            --allow-unauthenticated \
+            --no-allow-unauthenticated \
             --set-env-vars "GOOGLE_CLOUD_PROJECT=${{ env.PROJECT_ID }}"

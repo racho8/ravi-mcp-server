@@ -16,8 +16,8 @@ Add this to your GitHub Copilot settings or MCP client configuration:
 
 ```json
 {
-  "mcpServers": {
-    "ravi-product-service": {
+  "servers": {
+    "ravi-mcp-server": {
       "command": "curl",
       "args": [
         "-X", "POST",
@@ -37,8 +37,8 @@ For MCP clients that support direct HTTP connections:
 
 ```json
 {
-  "mcpServers": {
-    "ravi-product-service": {
+  "servers": {
+    "ravi-mcp-server": {
       "transport": {
         "type": "http",
         "url": "https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp"
@@ -98,7 +98,7 @@ Once configured, you can use these natural language commands:
    ```json
    {
      "mcpServers": {
-       "ravi-product-service": {
+       "ravi-mcp-server": {
          "command": "curl",
          "args": [
            "-X", "POST", 
@@ -110,6 +110,32 @@ Once configured, you can use these natural language commands:
      }
    }
    ```
+
+## Team Access Setup
+
+### For Team Members to Use Your MCP Server
+
+#### Option 1: Add Team Members to Google Cloud (Recommended)
+```bash
+# Add each team member's email to Cloud Run access
+gcloud run services add-iam-policy-binding ravi-mcp-server \
+  --region=europe-west3 \
+  --member="user:teammate@company.com" \
+  --role="roles/run.invoker"
+```
+
+Each team member then needs to:
+1. Install Google Cloud SDK
+2. Run `gcloud auth login`
+3. Use the MCP configuration with `$(gcloud auth print-access-token)`
+
+#### Option 2: Shared Service Account (Easier for Testing)
+1. Create a service account for team testing
+2. Generate a key file
+3. Share the key file securely with team members
+4. Team members use `GOOGLE_APPLICATION_CREDENTIALS`
+
+See [TEAM_ACCESS.md](TEAM_ACCESS.md) for detailed setup instructions.
 
 ## Authentication Setup
 
@@ -182,7 +208,7 @@ curl -X POST https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}'
 
 # Check server logs
-gcloud run logs read ravi-mcp-server --region=europe-west3
+gcloud run services logs read ravi-mcp-server --region=europe-west3
 ```
 
 ## Next Steps
