@@ -6,11 +6,11 @@ on:
       - main
 
 env:
-  PROJECT_ID: ingka-find-racho8-dev
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   REGION: europe-west3
   SERVICE_NAME: ravi-mcp-server
   REPO_NAME: ravi-mcp-server-repo
-  MICROSERVICE_URL: https://product-service-256110662801.europe-west3.run.app
+  MICROSERVICE_URL: ${{ secrets.MICROSERVICE_URL }}
 
 jobs:
   test:

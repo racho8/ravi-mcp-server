@@ -1,0 +1,38 @@
+# Service Account Keys & Secrets
+/sa-key.json
+/sa-key-base64.txt
+new-key-base64.txt
+*.key
+*.pem
+*.p12
+*.json
+!go.mod
+!go.sum
+!config/*.json
+!tests/*.json
+!mcp-clients/*.json
+
+# Environment Variables
+.env.local
+.env.production
+.env.development
+*.env
+
+# IDE & Editor Files
+.idea/
+.vscode/settings.json
+.vscode/launch.json
+*.swp
+*.swo
+*~
+
+# Build & Runtime
+dist/
+build/
+tmp/
+*.log
+*.pid
+
+# OS Files
+.DS_Store
+Thumbs.db

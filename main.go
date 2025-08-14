@@ -450,11 +450,25 @@ func sendJSONRPCError(w http.ResponseWriter, id interface{}, code int, message s
 
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Set CORS headers
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		// Get allowed origins from environment or use default
+		allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
+		if allowedOrigin == "" {
+			allowedOrigin = "https://claude.ai" // Default to Claude AI only
+		}
+		
+		// Set secure CORS headers
+		w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
+		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Credentials", "false") // Disable credentials for security
+		w.Header().Set("Access-Control-Max-Age", "86400") // Cache preflight for 24 hours
+
+		// Add security headers
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("X-XSS-Protection", "1; mode=block")
+		w.Header().Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+		w.Header().Set("Content-Security-Policy", "default-src 'self'")
 
 		// Handle preflight OPTIONS request
 		if r.Method == "OPTIONS" {
@@ -467,11 +481,17 @@ func corsMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
-	log.Printf("MICROSERVICE_URL: %s", os.Getenv("MICROSERVICE_URL"))
+	// Log configuration status without exposing sensitive URLs
+	microserviceURL := os.Getenv("MICROSERVICE_URL")
+	if microserviceURL != "" {
+		log.Printf("MICROSERVICE_URL: configured ✓")
+	} else {
+		log.Printf("MICROSERVICE_URL: not configured ⚠️")
+	}
 	log.Printf("PORT: %s", os.Getenv("PORT"))
 
 	config := Config{
-		MicroserviceURL: os.Getenv("MICROSERVICE_URL"),
+		MicroserviceURL: microserviceURL,
 		Port:            os.Getenv("PORT"),
 	}
 	if config.Port == "" {
