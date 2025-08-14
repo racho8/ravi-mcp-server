@@ -2,10 +2,10 @@
 
 This directory contains comprehensive testing tools for the MCP server. Choose the testing method that best fits your needs.
 
-## 🎯 **Quick Start**
+## **Quick Start**
 
 <details>
-<summary><strong>🤖 Automated Testing (Recommended)</strong></summary>
+<summary><strong>Automated Testing (Recommended)</strong></summary>
 
 ```bash
 # Run all tests
@@ -17,7 +17,7 @@ This directory contains comprehensive testing tools for the MCP server. Choose t
 </details>
 
 <details>
-<summary><strong>✋ Manual Testing</strong></summary>
+<summary><strong>Manual Testing</strong></summary>
 
 ```bash
 # View manual cURL commands
@@ -28,7 +28,7 @@ This directory contains comprehensive testing tools for the MCP server. Choose t
 ```
 </details>
 
-## 📁 **Files in This Directory**
+## **Files in This Directory**
 
 | File | Purpose | Usage |
 |------|---------|-------|
@@ -40,7 +40,7 @@ This directory contains comprehensive testing tools for the MCP server. Choose t
 | **`POSTMAN_IMPORT.md`** | Postman setup guide | Follow instructions |
 | **`test_mcp_requests.json`** | JSON test examples | Reference data |
 
-## 🚀 **Testing Methods**
+## **Testing Methods**
 
 ### **1. Automated Shell Testing**
 
@@ -110,7 +110,7 @@ cat POSTMAN_IMPORT.md
 cat test_mcp_requests.json | jq .
 ```
 
-## 🎯 **Testing Scenarios**
+## **Testing Scenarios**
 
 ### **Development Workflow:**
 ```bash
@@ -148,7 +148,7 @@ cd ../mcp-clients
 open mcp_web_client.html
 ```
 
-## 🔧 **Prerequisites**
+## **Prerequisites**
 
 ### **Local Development:**
 ```bash
@@ -171,30 +171,30 @@ go run ../main.go
 # -H "Authorization: Bearer $(gcloud auth print-access-token)"
 ```
 
-## 📋 **Test Coverage**
+## **Test Coverage**
 
 ### **Core MCP Protocol:**
-- ✅ **Initialize** - Server initialization and capabilities
-- ✅ **Tools List** - Available tools enumeration
-- ✅ **Tools Call** - Tool execution with parameters
-- ✅ **Error Handling** - Invalid methods and parameters
+- **Initialize** - Server initialization and capabilities
+- **Tools List** - Available tools enumeration
+- **Tools Call** - Tool execution with parameters
+- **Error Handling** - Invalid methods and parameters
 
 ### **Product Management Tools:**
-- ✅ **list_products** - Get all products
-- ✅ **create_product** - Create new product
-- ✅ **get_product** - Get specific product by ID
-- ✅ **update_product** - Update product fields
-- ✅ **delete_product** - Remove product
-- ✅ **health_check** - Server health status
-- ✅ **welcome_message** - Welcome message
+- **list_products** - Get all products
+- **create_product** - Create new product
+- **get_product** - Get specific product by ID
+- **update_product** - Update product fields
+- **delete_product** - Remove product
+- **health_check** - Server health status
+- **welcome_message** - Welcome message
 
 ### **Error Scenarios:**
-- ✅ **Invalid methods** - Non-existent JSON-RPC methods
-- ✅ **Invalid tools** - Non-existent tool names
-- ✅ **Missing parameters** - Required parameters not provided
-- ✅ **Invalid JSON** - Malformed request bodies
+- **Invalid methods** - Non-existent JSON-RPC methods
+- **Invalid tools** - Non-existent tool names
+- **Missing parameters** - Required parameters not provided
+- **Invalid JSON** - Malformed request bodies
 
-## 🔍 **Troubleshooting**
+## **Troubleshooting**
 
 ### **Common Issues:**
 
@@ -239,7 +239,7 @@ curl -v -X POST http://localhost:8080/mcp ...
 curl ... | jq .
 ```
 
-## 🎉 **Integration with Other Testing**
+## **Integration with Other Testing**
 
 ### **With MCP Clients:**
 ```bash
@@ -267,10 +267,10 @@ watch -n 30 './tests/validate_mcp.sh'
 
 ---
 
-## 🧪 **Manual Protocol Testing**
+## **Manual Protocol Testing**
 
 <details>
-<summary><strong>💻 Local Server Testing</strong></summary>
+<summary><strong>Local Server Testing</strong></summary>
 
 ```bash
 # Set environment variables
@@ -325,7 +325,7 @@ curl -X POST http://localhost:8080/mcp \
 </details>
 
 <details>
-<summary><strong>☁️ Production Server Testing</strong></summary>
+<summary><strong>Production Server Testing</strong></summary>
 
 ```bash
 # Test initialize
@@ -371,4 +371,4 @@ curl -X POST https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp \
 - **Learning/Debug** → `test_commands.sh` + Manual Protocol Testing
 - **Integration** → `test_mcp_requests.json`
 
-All testing tools work independently and can be used together for comprehensive testing! 🚀
+All testing tools work independently and can be used together for comprehensive testing!

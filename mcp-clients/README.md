@@ -1,11 +1,29 @@
 # MCP Testing Clients
 
-This folder contains **two independent client interfaces** for testing your MCP server. Both clients connect to the same server but provide different user experiences.
+This folder contains **two independent c3. Look for "Authentication successful!"
 
-## 🎯 **Quick Start Guide**
+#### 4. **Test Your Server**
+
+**Quick Actions (Click and Go):**
+- **List#### Use **Web Client** for:
+- **Team demos** and stakeholder presentations
+- **Interactive testing** with visual feedback  
+- **Business user access** (no command-line skills needed)
+- **Quick testing** and exploration
+
+#### Use **Python Client** for:
+- **Development workflows** and debugging
+- **Automated testing** and CI/CD pipelines
+- **Quick command-line checks**
+- **Scripting** and batch operations - Shows all products
+- **Health Check** - Server status  
+- **Welcome Message** - Welcome response
+- **Show Available Tools** - List all MCP toolserfaces** for testing your MCP server. Both clients connect to the same server but provide different user experiences.
+
+## **Quick Start Guide**
 
 <details>
-<summary><strong>🌐 Option 1: Web Client (Easiest)</strong></summary>
+<summary><strong>Option 1: Web Client (Easiest)</strong></summary>
 
 ```bash
 # Open in browser
@@ -19,7 +37,7 @@ gcloud auth print-access-token
 </details>
 
 <details>
-<summary><strong>🐍 Option 2: Python Client (Developers)</strong></summary>
+<summary><strong>Option 2: Python Client (Developers)</strong></summary>
 
 ```bash
 # Run with natural language commands
@@ -28,7 +46,7 @@ python mcp_test_client.py "health check"
 ```
 </details>
 
-## 📊 **Client Comparison**
+## **Client Comparison**
 
 | Feature | **Web Client** | **Python Client** |
 |---------|----------------|-------------------|
@@ -41,10 +59,10 @@ python mcp_test_client.py "health check"
 
 ---
 
-## 🌐 **Web Client Guide** (`mcp_web_client.html`)
+## **Web Client Guide** (`mcp_web_client.html`)
 
 <details>
-<summary><strong>📋 Step-by-Step Usage</strong></summary>
+<summary><strong>Step-by-Step Usage</strong></summary>
 
 #### 1. **Open the Web Client**
 ```bash
@@ -78,11 +96,11 @@ gcloud auth print-access-token
 </details>
 
 <details>
-<summary><strong>✨ Web Client Features</strong></summary>
+<summary><strong>Web Client Features</strong></summary>
 
 #### **Dual Output Modes:**
-- **📊 Visual Mode**: Formatted tables, colors, timestamps (Default)
-- **📋 JSON Mode**: Raw technical data for debugging
+- **Visual Mode**: Formatted tables, colors, timestamps (Default)
+- **JSON Mode**: Raw technical data for debugging
 - **Toggle anytime**: Switch between modes instantly
 
 #### **Example Usage Scenarios:**
@@ -99,7 +117,7 @@ gcloud auth print-access-token
 </details>
 
 <details>
-<summary><strong>📖 Tool Arguments Reference</strong></summary>
+<summary><strong>Tool Arguments Reference</strong></summary>
 
 | Tool | Arguments | Example |
 |------|-----------|---------|
@@ -113,10 +131,10 @@ gcloud auth print-access-token
 
 ---
 
-## 🐍 **Python Client Guide** (`mcp_test_client.py`)
+## **Python Client Guide** (`mcp_test_client.py`)
 
 <details>
-<summary><strong>⚡ Quick Commands</strong></summary>
+<summary><strong>Quick Commands</strong></summary>
 
 ```bash
 cd mcp-clients
@@ -130,17 +148,17 @@ python mcp_test_client.py "welcome message"
 </details>
 
 <details>
-<summary><strong>✅ Features</strong></summary>
+<summary><strong>Features</strong></summary>
 
-- ✅ **Natural Language Input**: Plain English commands
-- ✅ **Auto-Authentication**: Gets GCP token automatically via `gcloud`
-- ✅ **Terminal Output**: Clean JSON responses
-- ✅ **Script-Friendly**: Perfect for automation and CI/CD
-- ✅ **No Browser Required**: Works in headless environments
+- **Natural Language Input**: Plain English commands
+- **Auto-Authentication**: Gets GCP token automatically via `gcloud`
+- **Terminal Output**: Clean JSON responses
+- **Script-Friendly**: Perfect for automation and CI/CD
+- **No Browser Required**: Works in headless environments
 </details>
 
 <details>
-<summary><strong>📋 Prerequisites</strong></summary>
+<summary><strong>Prerequisites</strong></summary>
 
 ```bash
 # Install Google Cloud SDK and authenticate
@@ -151,19 +169,19 @@ gcloud config set project YOUR_PROJECT_ID
 
 ---
 
-## 🔄 **How Both Clients Work Together**
+## **How Both Clients Work Together**
 
 ### **Completely Independent:**
-- ✅ **No shared dependencies** - run separately
-- ✅ **Different authentication approaches**
-- ✅ **Can run simultaneously** without interference
-- ✅ **No data sharing** between clients
+- **No shared dependencies** - run separately
+- **Different authentication approaches**
+- **Can run simultaneously** without interference
+- **No data sharing** between clients
 
 ### **Same Backend:**
-- 🎯 **Same MCP Server**: `https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp`
-- 🎯 **Same Protocol**: JSON-RPC 2.0 format
-- 🎯 **Same Tools**: All CRUD operations + health checks
-- 🎯 **Same Data**: Both see same products and responses
+- **Same MCP Server**: `https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp`
+- **Same Protocol**: JSON-RPC 2.0 format
+- **Same Tools**: All CRUD operations + health checks
+- **Same Data**: Both see same products and responses
 
 ### **Choose Based on Your Needs:**
 
@@ -181,10 +199,10 @@ gcloud config set project YOUR_PROJECT_ID
 
 ---
 
-## 🚀 **Complete Test Workflow**
+## **Complete Test Workflow**
 
 <details>
-<summary><strong>🧪 Test Both Clients (5 minutes)</strong></summary>
+<summary><strong>Test Both Clients (5 minutes)</strong></summary>
 
 1. **Setup Authentication:**
    ```bash
@@ -212,10 +230,10 @@ gcloud config set project YOUR_PROJECT_ID
 
 ---
 
-## 🔧 **Troubleshooting**
+## **Troubleshooting**
 
 <details>
-<summary><strong>🔐 Authentication Issues</strong></summary>
+<summary><strong>Authentication Issues</strong></summary>
 
 ```bash
 # Refresh GCP authentication
@@ -225,7 +243,7 @@ gcloud auth print-access-token
 </details>
 
 <details>
-<summary><strong>🐍 Python Client Problems</strong></summary>
+<summary><strong>Python Client Problems</strong></summary>
 
 ```bash
 # Check prerequisites
@@ -235,7 +253,7 @@ python --version    # Should be 3.6+
 </details>
 
 <details>
-<summary><strong>🌐 Web Client Issues</strong></summary>
+<summary><strong>Web Client Issues</strong></summary>
 
 - **Token expired**: Get fresh token with `gcloud auth print-access-token`
 - **CORS errors**: Try different browser or use Python client
@@ -244,7 +262,7 @@ python --version    # Should be 3.6+
 
 ---
 
-## � **File Structure**
+## **File Structure**
 
 ```
 mcp-clients/
@@ -255,6 +273,6 @@ mcp-clients/
 
 ---
 
-**Both clients provide full access to your MCP server - choose the interface that fits your workflow!** 🎯
+**Both clients provide full access to your MCP server - choose the interface that fits your workflow!**
 
 For server details and architecture, see the main project README.md in the root directory.

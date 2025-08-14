@@ -1,6 +1,14 @@
-# Ravi MCP Server
+# MCP Server
 
-A **Model Context Protocol (MCP)** server that provides product management capabilities through a clean JSON-RPC 2.0 API. Deployed on Google Cloud Run with auto-scaling and high availability.
+A **Model Context <details>
+<summary><strong>Fo<details>
+<summary><strong>1. Get Access Token (After Ge<details>
+<summa<details>
+<summary><strong>Setup Go Environment</strong></summary>><strong>For New Contributors: Setup Requirements</strong></summary>
+
+**Required Configuration:**g Access)</strong></summary>New Contributors: Get Access</strong></summary>
+
+**Required for Testing:**ocol (MCP)** server that provides product management capabilities through a clean JSON-RPC 2.0 API. Deployed on Google Cloud Run with auto-scaling and high availability.
 
 ## **What is This?**
 
@@ -15,9 +23,17 @@ This server acts as a bridge between AI clients (like Claude Desktop) and a prod
 
 ## **Architecture**
 
+### **System Overview**
+
+Choose your preferred visualization style:
+
+**Modern Design** (Cloudflare-inspired)  
+![Modern Architecture](docs/architecture-diagram-modern.svg)
+
+**Detailed View** (Technical documentation)  
 ![Architecture Diagram](docs/architecture-diagram.svg)
 
-**Flow:** MCP Clients → Ravi MCP Server → Product Service → Cloud Datastore
+**Flow:** MCP Clients → MCP Server → Product Service → Cloud Datastore
 
 **Components:**
 - **MCP Clients**: Python CLI, Web browser, Claude Desktop integration
@@ -28,15 +44,45 @@ This server acts as a bridge between AI clients (like Claude Desktop) and a prod
 ## **Quick Test (2 minutes)**
 
 <details>
-<summary><strong>🔑 1. Get Access Token</strong></summary>
+<summary><strong>� For New Contributors: Get Access</strong></summary>
+
+**🔐 Required for Testing:**
+- **MICROSERVICE_URL**: Backend service endpoint
+- **Google Cloud credentials**: Authentication token
+
+**How to get access:**
+1. **Contact Repository Owner**: Reach out to [@racho8](https://github.com/racho8) via:
+   - GitHub Issues: [Create new issue](https://github.com/racho8/ravi-mcp-server/issues/new)
+   - Email: (see GitHub profile)
+   - Slack/Teams: (if you're on the same team)
+
+2. **What to include in your request:**
+   - Your GitHub username
+   - Intended use case (testing, development, integration)
+   - Google Cloud account email (for IAM permissions)
+
+3. **What you'll receive:**
+   - MICROSERVICE_URL endpoint
+   - Google Cloud project access
+   - Setup instructions specific to your use case
+
+**For Team Members:** See [`docs/TEAM_ACCESS.md`](docs/TEAM_ACCESS.md) for detailed access setup.
+</details>
+
+<details>
+<summary><strong>�🔑 1. Get Access Token (After Getting Access)</strong></summary>
 
 ```bash
+# Authenticate with Google Cloud
+gcloud auth login
+
+# Get access token for API calls
 gcloud auth print-access-token
 ```
 </details>
 
 <details>
-<summary><strong>🧪 2. Choose Your Testing Method</strong></summary>
+<summary><strong>2. Choose Your Testing Method</strong></summary>
 
 **Option A: Web Client (Easiest)**
 ```bash
@@ -53,8 +99,9 @@ python mcp_test_client.py "list all products"
 
 **Option C: Direct API Call**
 ```bash
+# Replace <SERVER_URL> with the URL provided by repository owner
 curl -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-  https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp \
+  <SERVER_URL>/mcp \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"health_check","arguments":{}}}'
 ```
 </details>
@@ -73,7 +120,20 @@ curl -H "Authorization: Bearer $(gcloud auth print-access-token)" \
 ## **Local Development**
 
 <details>
-<summary><strong>🔧 Setup Go Environment</strong></summary>
+<summary><strong>� For New Contributors: Setup Requirements</strong></summary>
+
+**🔐 Required Configuration:**
+- **MICROSERVICE_URL**: Backend service endpoint (contact repository owner)
+- **Google Cloud credentials**: Project access for authentication
+
+**To get started with local development:**
+1. **Request access** from [@racho8](https://github.com/racho8) (see "Quick Test" section above)
+2. **Follow the setup steps** below after receiving your configuration
+3. **See [`SECURITY.md`](SECURITY.md)** for detailed security guidelines
+</details>
+
+<details>
+<summary><strong>�🔧 Setup Go Environment</strong></summary>
 
 ```bash
 # Quick setup (handles version issues)
@@ -85,7 +145,7 @@ go version  # Should be 1.23+
 </details>
 
 <details>
-<summary><strong>🚀 Run Locally</strong></summary>
+<summary><strong>Run Locally (After Getting Access)</strong></summary>
 
 ```bash
 # Install dependencies
@@ -94,29 +154,51 @@ go mod download
 # Run tests
 go test -v ./...
 
+# Set environment variables (replace with values provided by repository owner)
+export MICROSERVICE_URL="<MICROSERVICE_URL_PROVIDED_BY_OWNER>"
+export PORT="8080"
+
 # Start server
-export MICROSERVICE_URL="https://product-service-256110662801.europe-west3.run.app"
 go run main.go
+
+# Test locally
+curl http://localhost:8080/health
+```
+
+**Tip:** Create a `.env` file with your environment variables for convenience:
+```bash
+# .env (not committed to git)
+MICROSERVICE_URL=<your_microservice_url>
+PORT=8080
 ```
 </details>
 
 ## **Integration**
 
 <details>
-<summary><strong>🤖 Claude Desktop</strong></summary>
+<summary><strong>Claude Desktop (After Getting Access)</strong></summary>
 
 ```bash
+# Copy MCP configuration template
 cp config/mcp.json ~/.config/claude/claude_desktop_config.json
+
+# Update the configuration file with:
+# 1. Server URL provided by repository owner
+# 2. Your authentication method (see SECURITY.md)
+
 # Restart Claude Desktop, then ask: "Show me all products"
 ```
+
+**Note:** You'll need to update the MCP configuration with the actual server URL provided by the repository owner.
 </details>
 
 <details>
-<summary><strong>🔗 Custom Applications</strong></summary>
+<summary><strong>Custom Applications</strong></summary>
 
-- **Endpoint**: `https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp`
+- **Endpoint**: Contact [@racho8](https://github.com/racho8) for server URL
 - **Protocol**: MCP JSON-RPC 2.0
 - **Auth**: Google Cloud Bearer tokens
+- **Documentation**: See [`config/MCP_CONFIGURATION.md`](config/MCP_CONFIGURATION.md)
 </details>
 
 ## **Project Structure**
@@ -136,42 +218,59 @@ ravi-mcp-server/
 ## **Deployment & Management**
 
 <details>
-<summary><strong>☁️ Cloud Run Commands</strong></summary>
+<summary><strong>Cloud Run Commands (For Authorized Users)</strong></summary>
 
 ```bash
-# Update environment variables
+# Update environment variables (replace with actual values)
 gcloud run services update ravi-mcp-server \
     --region=europe-west3 \
-    --set-env-vars "MICROSERVICE_URL=https://product-service-256110662801.europe-west3.run.app"
+    --set-env-vars "MICROSERVICE_URL=<MICROSERVICE_URL>"
 
 # Check current environment variables
 gcloud run services describe ravi-mcp-server \
   --region=europe-west3 \
   --format="value(spec.template.spec.containers[0].env)"
 
-# Add IAM access (if needed)
+# Add IAM access for team members
 gcloud run services add-iam-policy-binding ravi-mcp-server \
   --region=europe-west3 \
-  --member="domain:your-organization.com" \
+  --member="user:teammate@domain.com" \
   --role="roles/run.invoker"
 ```
+
+**Note:** These commands require Google Cloud project access. Contact repository owner for permissions.
 </details>
 
 <details>
-<summary><strong>🔐 Required Secrets (GitHub Actions)</strong></summary>
+<summary><strong>Required Secrets (For Contributors with Deploy Access)</strong></summary>
 
+For GitHub Actions deployment, these secrets must be configured:
 - `GCP_SA_KEY`: Google Cloud service account key
 - `GCP_PROJECT_ID`: Google Cloud project ID  
-- `MICROSERVICE_URL`: Target microservice URL
+- `MICROSERVICE_URL`: Backend microservice endpoint
+- `ALLOWED_ORIGIN`: CORS allowed origin
+
+**Setup Guide:** See [`SECURITY.md`](SECURITY.md) for detailed instructions.
 </details>
 
 ## **Need More Details?**
 
+- **Security & Access**: [`SECURITY.md`](SECURITY.md) - Security guidelines and setup
 - **Testing**: [`tests/README.md`](tests/README.md) - Comprehensive testing guide
 - **Client Usage**: [`mcp-clients/README.md`](mcp-clients/README.md) - Complete client guide
 - **Team Setup**: [`docs/TEAM_ACCESS.md`](docs/TEAM_ACCESS.md) - Team authentication
 - **Configuration**: [`config/MCP_CONFIGURATION.md`](config/MCP_CONFIGURATION.md) - MCP setup
 
+## **Getting Started as a New User**
+
+**New to this repository?**
+1. **Contact [@racho8](https://github.com/racho8)** for access credentials
+2. **Read [`SECURITY.md`](SECURITY.md)** for security best practices  
+3. **Start with the web client** for easiest testing experience
+4. **Follow team setup guide** in [`docs/TEAM_ACCESS.md`](docs/TEAM_ACCESS.md)
+
+**Already have access?** Jump to "Quick Test" section above!
+
 ---
 
-**Ready to test?** Start with the web client for easiest experience, or dive into the detailed guides above!
+**Ready to contribute?** All credentials and URLs are managed securely through environment variables and GitHub Secrets. Contact the repository owner for access!
