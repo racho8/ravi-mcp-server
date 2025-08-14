@@ -10,6 +10,7 @@ env:
   REGION: europe-west3
   SERVICE_NAME: ravi-mcp-server
   REPO_NAME: ravi-mcp-server-repo
+  MICROSERVICE_URL: https://product-service-256110662801.europe-west3.run.app
 
 jobs:
   test:
@@ -38,7 +39,7 @@ jobs:
 
       - name: Start MCP server for testing
         run: |
-          export MICROSERVICE_URL="https://product-service-256110662801.europe-west3.run.app"
+          export MICROSERVICE_URL="${{ env.MICROSERVICE_URL }}"
           go run main.go &
           SERVER_PID=$!
           echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
@@ -123,4 +124,4 @@ jobs:
             --platform managed \
             --region ${{ env.REGION }} \
             --no-allow-unauthenticated \
-            --set-env-vars "GOOGLE_CLOUD_PROJECT=${{ env.PROJECT_ID }}"
+            --set-env-vars "GOOGLE_CLOUD_PROJECT=${{ env.PROJECT_ID }},MICROSERVICE_URL=${{ env.MICROSERVICE_URL }}"
