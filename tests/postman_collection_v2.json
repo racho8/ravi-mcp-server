@@ -1,438 +1,128 @@
 {
   "info": {
-    "_postman_id": "12345678-1234-1234-1234-123456789012",
-    "name": "Ravi MCP Server Test Collection",
-    "description": "Test collection for MCP JSON-RPC 2.0 Protocol server",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "12345678"
+    "name": "MCP Server API Collection",
+    "description": "Postman collection for MCP Server JSON-RPC endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "variable": [
-    {
-      "key": "base_url",
-      "value": "http://localhost:8080",
-      "type": "string"
-    },
-    {
-      "key": "production_url",
-      "value": "https://ravi-mcp-server-256110662801.europe-west3.run.app",
-      "type": "string"
-    }
-  ],
   "item": [
     {
-      "name": "1. Initialize Connection",
+      "name": "Health Check",
       "request": {
         "method": "POST",
         "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{GCP_AUTH_TOKEN}}" }
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"initialize\",\n  \"params\": {\n    \"protocolVersion\": \"2024-11-05\",\n    \"capabilities\": {},\n    \"clientInfo\": {\n      \"name\": \"postman-client\",\n      \"version\": \"1.0.0\"\n    }\n  }\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "raw": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\",\"params\":{\"name\":\"health_check\",\"arguments\":{}}}"
         },
         "url": {
-          "raw": "{{base_url}}/mcp",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "mcp"
-          ]
-        },
-        "description": "Initialize MCP connection and handshake"
+          "raw": "https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp",
+          "protocol": "https",
+          "host": ["ravi-mcp-server-256110662801.europe-west3.run.app"],
+          "path": ["mcp"]
+        }
       }
     },
     {
-      "name": "2. List Available Tools",
+      "name": "List Products",
       "request": {
         "method": "POST",
         "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{GCP_AUTH_TOKEN}}" }
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 2,\n  \"method\": \"tools/list\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "raw": "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/call\",\"params\":{\"name\":\"list_products\",\"arguments\":{}}}"
         },
         "url": {
-          "raw": "{{base_url}}/mcp",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "mcp"
-          ]
-        },
-        "description": "Get list of all available tools"
+          "raw": "https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp",
+          "protocol": "https",
+          "host": ["ravi-mcp-server-256110662801.europe-west3.run.app"],
+          "path": ["mcp"]
+        }
       }
     },
     {
-      "name": "3. Health Check",
+      "name": "Create Product",
       "request": {
         "method": "POST",
         "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{GCP_AUTH_TOKEN}}" }
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 3,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"health_check\"\n  }\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "raw": "{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"tools/call\",\"params\":{\"name\":\"create_product\",\"arguments\":{\"name\":\"Laptop\",\"category\":\"Electronics\",\"price\":999}}}"
         },
         "url": {
-          "raw": "{{base_url}}/mcp",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "mcp"
-          ]
-        },
-        "description": "Check the health of the product service"
+          "raw": "https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp",
+          "protocol": "https",
+          "host": ["ravi-mcp-server-256110662801.europe-west3.run.app"],
+          "path": ["mcp"]
+        }
       }
     },
     {
-      "name": "4. Welcome Message",
+      "name": "Get Product",
       "request": {
         "method": "POST",
         "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{GCP_AUTH_TOKEN}}" }
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 4,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"welcome_message\"\n  }\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "raw": "{\"jsonrpc\":\"2.0\",\"id\":4,\"method\":\"tools/call\",\"params\":{\"name\":\"get_product\",\"arguments\":{\"id\":\"PRODUCT_ID\"}}}"
         },
         "url": {
-          "raw": "{{base_url}}/mcp",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "mcp"
-          ]
-        },
-        "description": "Get welcome message from the product service"
+          "raw": "https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp",
+          "protocol": "https",
+          "host": ["ravi-mcp-server-256110662801.europe-west3.run.app"],
+          "path": ["mcp"]
+        }
       }
     },
     {
-      "name": "5. List All Products",
+      "name": "Update Product",
       "request": {
         "method": "POST",
         "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{GCP_AUTH_TOKEN}}" }
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 5,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"list_products\"\n  }\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "raw": "{\"jsonrpc\":\"2.0\",\"id\":5,\"method\":\"tools/call\",\"params\":{\"name\":\"update_product\",\"arguments\":{\"id\":\"PRODUCT_ID\",\"price\":899}}}"
         },
         "url": {
-          "raw": "{{base_url}}/mcp",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "mcp"
-          ]
-        },
-        "description": "List all products in the store"
+          "raw": "https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp",
+          "protocol": "https",
+          "host": ["ravi-mcp-server-256110662801.europe-west3.run.app"],
+          "path": ["mcp"]
+        }
       }
     },
     {
-      "name": "6. Create Product - MacBook Pro",
+      "name": "Delete Product",
       "request": {
         "method": "POST",
         "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{GCP_AUTH_TOKEN}}" }
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 6,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"create_product\",\n    \"arguments\": {\n      \"name\": \"MacBook Pro 16-inch\",\n      \"category\": \"Electronics\",\n      \"segment\": \"Laptops\",\n      \"price\": 2499\n    }\n  }\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "raw": "{\"jsonrpc\":\"2.0\",\"id\":6,\"method\":\"tools/call\",\"params\":{\"name\":\"delete_product\",\"arguments\":{\"id\":\"PRODUCT_ID\"}}}"
         },
         "url": {
-          "raw": "{{base_url}}/mcp",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "mcp"
-          ]
-        },
-        "description": "Create a new MacBook Pro product"
-      }
-    },
-    {
-      "name": "7. Create Product - iPhone",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 7,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"create_product\",\n    \"arguments\": {\n      \"name\": \"iPhone 15 Pro\",\n      \"category\": \"Electronics\",\n      \"segment\": \"Smartphones\",\n      \"price\": 999\n    }\n  }\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{base_url}}/mcp",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "mcp"
-          ]
-        },
-        "description": "Create a new iPhone product"
-      }
-    },
-    {
-      "name": "8. Get Product by ID",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 8,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"get_product\",\n    \"arguments\": {\n      \"id\": \"product-123\"\n    }\n  }\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{base_url}}/mcp",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "mcp"
-          ]
-        },
-        "description": "Get a specific product by ID (replace product-123 with actual ID)"
-      }
-    },
-    {
-      "name": "9. Update Product",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 9,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"update_product\",\n    \"arguments\": {\n      \"id\": \"product-123\",\n      \"name\": \"MacBook Pro 16-inch M3\",\n      \"price\": 2799\n    }\n  }\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{base_url}}/mcp",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "mcp"
-          ]
-        },
-        "description": "Update an existing product (replace product-123 with actual ID)"
-      }
-    },
-    {
-      "name": "10. Delete Product",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 10,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"delete_product\",\n    \"arguments\": {\n      \"id\": \"product-123\"\n    }\n  }\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{base_url}}/mcp",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "mcp"
-          ]
-        },
-        "description": "Delete a product by ID (replace product-123 with actual ID)"
-      }
-    },
-    {
-      "name": "11. Error Test - Invalid Method",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 11,\n  \"method\": \"invalid_method\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{base_url}}/mcp",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "mcp"
-          ]
-        },
-        "description": "Test error handling - should return method not found error"
-      }
-    },
-    {
-      "name": "12. Error Test - Invalid Tool",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 12,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"invalid_tool\"\n  }\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{base_url}}/mcp",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "mcp"
-          ]
-        },
-        "description": "Test error handling - should return unsupported tool error"
-      }
-    },
-    {
-      "name": "13. Error Test - Missing Params",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 13,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"get_product\"\n  }\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{base_url}}/mcp",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "mcp"
-          ]
-        },
-        "description": "Test error handling - missing required parameter 'id'"
+          "raw": "https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp",
+          "protocol": "https",
+          "host": ["ravi-mcp-server-256110662801.europe-west3.run.app"],
+          "path": ["mcp"]
+        }
       }
     }
   ]
