@@ -27,12 +27,16 @@ This server acts as a bridge between AI clients (like Claude Desktop) and a prod
 
 ## **Quick Test (2 minutes)**
 
-### **1. Get Access Token**
+<details>
+<summary><strong>🔑 1. Get Access Token</strong></summary>
+
 ```bash
 gcloud auth print-access-token
 ```
+</details>
 
-### **2. Choose Your Testing Method**
+<details>
+<summary><strong>🧪 2. Choose Your Testing Method</strong></summary>
 
 **Option A: Web Client (Easiest)**
 ```bash
@@ -53,6 +57,7 @@ curl -H "Authorization: Bearer $(gcloud auth print-access-token)" \
   https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"health_check","arguments":{}}}'
 ```
+</details>
 
 ## **Available Tools**
 
@@ -67,7 +72,9 @@ curl -H "Authorization: Bearer $(gcloud auth print-access-token)" \
 
 ## **Local Development**
 
-### **Setup Go Environment**
+<details>
+<summary><strong>🔧 Setup Go Environment</strong></summary>
+
 ```bash
 # Quick setup (handles version issues)
 ./setup-go-env.sh
@@ -75,8 +82,11 @@ curl -H "Authorization: Bearer $(gcloud auth print-access-token)" \
 # Verify
 go version  # Should be 1.23+
 ```
+</details>
 
-### **Run Locally**
+<details>
+<summary><strong>🚀 Run Locally</strong></summary>
+
 ```bash
 # Install dependencies
 go mod download
@@ -88,19 +98,26 @@ go test -v ./...
 export MICROSERVICE_URL="https://product-service-256110662801.europe-west3.run.app"
 go run main.go
 ```
+</details>
 
 ## **Integration**
 
-### **Claude Desktop**
+<details>
+<summary><strong>🤖 Claude Desktop</strong></summary>
+
 ```bash
 cp config/mcp.json ~/.config/claude/claude_desktop_config.json
 # Restart Claude Desktop, then ask: "Show me all products"
 ```
+</details>
 
-### **Custom Applications**
+<details>
+<summary><strong>🔗 Custom Applications</strong></summary>
+
 - **Endpoint**: `https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp`
 - **Protocol**: MCP JSON-RPC 2.0
 - **Auth**: Google Cloud Bearer tokens
+</details>
 
 ## **Project Structure**
 
@@ -118,7 +135,9 @@ ravi-mcp-server/
 
 ## **Deployment & Management**
 
-### **Cloud Run Commands**
+<details>
+<summary><strong>☁️ Cloud Run Commands</strong></summary>
+
 ```bash
 # Update environment variables
 gcloud run services update ravi-mcp-server \
@@ -136,11 +155,15 @@ gcloud run services add-iam-policy-binding ravi-mcp-server \
   --member="domain:your-organization.com" \
   --role="roles/run.invoker"
 ```
+</details>
 
-### **Required Secrets (GitHub Actions)**
+<details>
+<summary><strong>🔐 Required Secrets (GitHub Actions)</strong></summary>
+
 - `GCP_SA_KEY`: Google Cloud service account key
 - `GCP_PROJECT_ID`: Google Cloud project ID  
 - `MICROSERVICE_URL`: Target microservice URL
+</details>
 
 ## **Need More Details?**
 

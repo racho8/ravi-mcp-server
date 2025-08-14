@@ -4,7 +4,9 @@ This guide helps you configure your MCP server to work with GitHub Copilot and o
 
 ## 🎯 **Quick Configuration**
 
-### **GitHub Copilot Setup:**
+<details>
+<summary><strong>🤖 GitHub Copilot Setup</strong></summary>
+
 ```bash
 # Copy the appropriate config
 cp config/mcp.json ~/.config/claude/claude_desktop_config.json
@@ -12,11 +14,15 @@ cp config/mcp.json ~/.config/claude/claude_desktop_config.json
 # Restart Claude Desktop and ask:
 # "Show me all products in the store"
 ```
+</details>
 
-### **Custom MCP Client Setup:**
+<details>
+<summary><strong>🔗 Custom MCP Client Setup</strong></summary>
+
 - **Server URL**: `https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp`
 - **Protocol**: MCP JSON-RPC 2.0
 - **Authentication**: Google Cloud Bearer tokens
+</details>
 
 ## 📋 **Configuration Files**
 
@@ -26,7 +32,9 @@ cp config/mcp.json ~/.config/claude/claude_desktop_config.json
 
 ## 🔧 **MCP Protocol Implementation**
 
-### **Protocol Compliance**
+<details>
+<summary><strong>📝 Protocol Compliance</strong></summary>
+
 This server implements **MCP JSON-RPC 2.0 Protocol** with required methods:
 
 #### **1. `initialize`** - Handshake
@@ -68,6 +76,7 @@ This server implements **MCP JSON-RPC 2.0 Protocol** with required methods:
   }
 }
 ```
+</details>
 
 ## 🛠️ **Available Tools**
 
@@ -88,17 +97,22 @@ This server implements **MCP JSON-RPC 2.0 Protocol** with required methods:
 
 ## 🔍 **Troubleshooting**
 
-### **Common Issues:**
+<details>
+<summary><strong>❗ Common Issues</strong></summary>
 
 1. **Method not found**: Use exact method names (`initialize`, `tools/list`, `tools/call`)
 2. **Invalid JSON-RPC**: Always include `"jsonrpc": "2.0"` and unique `id`
 3. **Authentication errors**: Verify GCP service account permissions
 4. **Microservice connectivity**: Check `MICROSERVICE_URL` environment variable
+</details>
 
-### **GitHub Copilot Integration:**
+<details>
+<summary><strong>🤖 GitHub Copilot Integration</strong></summary>
+
 1. Configure MCP server URL in Copilot settings
 2. Copilot automatically discovers tools via MCP protocol
 3. Use natural language: "Create a new product called 'iPhone 15'"
+</details>
 
 For testing examples and deployment commands, see [`tests/README.md`](../tests/README.md) and main project README.
 ```

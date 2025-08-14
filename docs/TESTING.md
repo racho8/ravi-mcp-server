@@ -1,6 +1,7 @@
 # Quick Start Testing Guide
 
-## For Postman Users
+<details>
+<summary><strong>📮 For Postman Users</strong></summary>
 
 1. **Import Collection**: Import `postman_collection.json` into Postman
 2. **Set Variables**: 
@@ -8,8 +9,10 @@
    - `production_url` = `https://ravi-mcp-server-256110662801.europe-west3.run.app`
 3. **Start Server**: Run your local server first
 4. **Run Tests**: Execute requests in order
+</details>
 
-## For Command Line Users
+<details>
+<summary><strong>💻 For Command Line Users</strong></summary>
 
 ### Quick Test (Automated)
 ```bash
@@ -40,10 +43,13 @@ curl -X POST http://localhost:8080/mcp \
     }
   }'
 ```
+</details>
 
 ## Expected Responses
 
-### Initialize Response
+<details>
+<summary><strong>🔧 Initialize Response</strong></summary>
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -60,8 +66,11 @@ curl -X POST http://localhost:8080/mcp \
   }
 }
 ```
+</details>
 
-### Tools List Response
+<details>
+<summary><strong>🛠️ Tools List Response</strong></summary>
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -81,8 +90,11 @@ curl -X POST http://localhost:8080/mcp \
   }
 }
 ```
+</details>
 
-### Tool Call Response (JSON Data)
+<details>
+<summary><strong>📊 Tool Call Response (JSON Data)</strong></summary>
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -104,8 +116,11 @@ curl -X POST http://localhost:8080/mcp \
   }
 }
 ```
+</details>
 
-### Tool Call Response (Text Data)
+<details>
+<summary><strong>📝 Tool Call Response (Text Data)</strong></summary>
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -120,8 +135,11 @@ curl -X POST http://localhost:8080/mcp \
   }
 }
 ```
+</details>
 
-### Error Response
+<details>
+<summary><strong>❌ Error Response</strong></summary>
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -133,8 +151,12 @@ curl -X POST http://localhost:8080/mcp \
   }
 }
 ```
+</details>
 
 ## Testing Workflow
+
+<details>
+<summary><strong>📋 Step-by-Step Testing Process</strong></summary>
 
 1. **Initialize** - Test connection
 2. **Tools/List** - Verify all tools are available  
@@ -145,10 +167,15 @@ curl -X POST http://localhost:8080/mcp \
 7. **Update Product** - Test PUT operations (use ID from step 5)
 8. **Delete Product** - Test DELETE operations (use ID from step 5)
 9. **Error Tests** - Verify proper error handling
+</details>
 
 ## Files Created for Testing
+
+<details>
+<summary><strong>📁 Testing Resources</strong></summary>
 
 - `postman_collection.json` - Import into Postman
 - `test_commands.sh` - Manual curl commands (display only)
 - `run_tests.sh` - Automated test execution
 - `validate_mcp.sh` - Protocol validation script
+</details>

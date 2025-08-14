@@ -1,6 +1,9 @@
 # Postman Import Instructions
 
-## Option 1: Import the Fixed Collection (Recommended)
+# Postman Import Instructions
+
+<details>
+<summary><strong>✅ Option 1: Import the Fixed Collection (Recommended)</strong></summary>
 
 Use the file `postman_collection_v2.json` in this directory which follows the proper Postman Collection v2.1 format.
 
@@ -10,8 +13,10 @@ Use the file `postman_collection_v2.json` in this directory which follows the pr
 3. Select "File" tab
 4. Choose `tests/postman_collection_v2.json`
 5. Click "Import"
+</details>
 
-## Option 2: Manual Setup (If import still fails)
+<details>
+<summary><strong>🔧 Option 2: Manual Setup (If import still fails)</strong></summary>
 
 ### 1. Create New Collection
 - Click "New" → "Collection"
@@ -107,8 +112,11 @@ Content-Type: application/json
   }
 }
 ```
+</details>
 
-## Option 3: Use cURL Commands
+<details>
+<summary><strong>💻 Option 3: Use cURL Commands</strong></summary>
+
 If Postman import continues to fail, use the automated test script:
 
 ```bash
@@ -120,8 +128,12 @@ go run main.go
 cd ..
 ./tests/run_tests.sh
 ```
+</details>
 
 ## Troubleshooting Postman Import
+
+<details>
+<summary><strong>🔍 Common Issues and Solutions</strong></summary>
 
 If you're still having issues:
 
@@ -131,11 +143,16 @@ If you're still having issues:
    - Copy-paste the JSON content directly
 3. **Validate JSON**: Use a JSON validator to ensure the file is valid
 4. **Manual Setup**: Create requests manually as shown in Option 2
+</details>
 
 ## Files in This Directory
+
+<details>
+<summary><strong>📁 Available Test Files</strong></summary>
 
 - `postman_collection_v2.json` - Proper Postman Collection v2.1 format
 - `run_tests.sh` - Automated test runner
 - `test_commands.sh` - Manual cURL commands
 - `test_mcp_requests.json` - JSON test examples
 - `validate_mcp.sh` - MCP protocol validation
+</details>

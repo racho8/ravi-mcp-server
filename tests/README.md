@@ -4,7 +4,9 @@ This directory contains comprehensive testing tools for the MCP server. Choose t
 
 ## 🎯 **Quick Start**
 
-### **Automated Testing (Recommended):**
+<details>
+<summary><strong>🤖 Automated Testing (Recommended)</strong></summary>
+
 ```bash
 # Run all tests
 ./run_tests.sh
@@ -12,8 +14,11 @@ This directory contains comprehensive testing tools for the MCP server. Choose t
 # Validate MCP protocol compliance
 ./validate_mcp.sh
 ```
+</details>
 
-### **Manual Testing:**
+<details>
+<summary><strong>✋ Manual Testing</strong></summary>
+
 ```bash
 # View manual cURL commands
 ./test_commands.sh
@@ -21,6 +26,7 @@ This directory contains comprehensive testing tools for the MCP server. Choose t
 # Import Postman collection
 # See POSTMAN_IMPORT.md for instructions
 ```
+</details>
 
 ## 📁 **Files in This Directory**
 
@@ -263,7 +269,9 @@ watch -n 30 './tests/validate_mcp.sh'
 
 ## 🧪 **Manual Protocol Testing**
 
-### **Local Server Testing:**
+<details>
+<summary><strong>💻 Local Server Testing</strong></summary>
+
 ```bash
 # Set environment variables
 export MICROSERVICE_URL="https://product-service-256110662801.europe-west3.run.app"
@@ -314,8 +322,11 @@ curl -X POST http://localhost:8080/mcp \
     }
   }'
 ```
+</details>
 
-### **Production Server Testing:**
+<details>
+<summary><strong>☁️ Production Server Testing</strong></summary>
+
 ```bash
 # Test initialize
 curl -X POST https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp \
@@ -350,6 +361,7 @@ curl -X POST https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp \
     }
   }'
 ```
+</details>
 
 ---
 

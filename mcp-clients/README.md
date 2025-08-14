@@ -4,7 +4,9 @@ This folder contains **two independent client interfaces** for testing your MCP 
 
 ## 🎯 **Quick Start Guide**
 
-### **Option 1: Web Client (Easiest)**
+<details>
+<summary><strong>🌐 Option 1: Web Client (Easiest)</strong></summary>
+
 ```bash
 # Open in browser
 open mcp_web_client.html  # macOS
@@ -14,13 +16,17 @@ open mcp_web_client.html  # macOS
 # Get your token and paste in web client
 gcloud auth print-access-token
 ```
+</details>
 
-### **Option 2: Python Client (Developers)**
+<details>
+<summary><strong>🐍 Option 2: Python Client (Developers)</strong></summary>
+
 ```bash
 # Run with natural language commands
 python mcp_test_client.py "list all products"
 python mcp_test_client.py "health check"
 ```
+</details>
 
 ## 📊 **Client Comparison**
 
@@ -37,7 +43,8 @@ python mcp_test_client.py "health check"
 
 ## 🌐 **Web Client Guide** (`mcp_web_client.html`)
 
-### **Step-by-Step Usage:**
+<details>
+<summary><strong>📋 Step-by-Step Usage</strong></summary>
 
 #### 1. **Open the Web Client**
 ```bash
@@ -68,8 +75,10 @@ gcloud auth print-access-token
 1. Select tool from dropdown menu
 2. Enter arguments in JSON format (if needed)
 3. Click "Call Tool" to execute
+</details>
 
-### **Web Client Features:**
+<details>
+<summary><strong>✨ Web Client Features</strong></summary>
 
 #### **Dual Output Modes:**
 - **📊 Visual Mode**: Formatted tables, colors, timestamps (Default)
@@ -87,8 +96,10 @@ gcloud auth print-access-token
 1. Select "update_product" 
 2. Enter: `{"id":"PRODUCT_ID","price":1999}`
 3. Click "Call Tool"
+</details>
 
-#### **Tool Arguments Reference:**
+<details>
+<summary><strong>📖 Tool Arguments Reference</strong></summary>
 
 | Tool | Arguments | Example |
 |------|-----------|---------|
@@ -98,12 +109,15 @@ gcloud auth print-access-token
 | `update_product` | id + fields to update | `{"id":"abc123","price":899}` |
 | `delete_product` | id | `{"id":"abc123"}` |
 | `health_check` | None | `{}` |
+</details>
 
 ---
 
 ## 🐍 **Python Client Guide** (`mcp_test_client.py`)
 
-### **Quick Commands:**
+<details>
+<summary><strong>⚡ Quick Commands</strong></summary>
+
 ```bash
 cd mcp-clients
 
@@ -113,20 +127,27 @@ python mcp_test_client.py "health check"
 python mcp_test_client.py "show available tools"
 python mcp_test_client.py "welcome message"
 ```
+</details>
 
-### **Features:**
+<details>
+<summary><strong>✅ Features</strong></summary>
+
 - ✅ **Natural Language Input**: Plain English commands
 - ✅ **Auto-Authentication**: Gets GCP token automatically via `gcloud`
 - ✅ **Terminal Output**: Clean JSON responses
 - ✅ **Script-Friendly**: Perfect for automation and CI/CD
 - ✅ **No Browser Required**: Works in headless environments
+</details>
 
-### **Prerequisites:**
+<details>
+<summary><strong>📋 Prerequisites</strong></summary>
+
 ```bash
 # Install Google Cloud SDK and authenticate
 gcloud auth login
 gcloud config set project YOUR_PROJECT_ID
 ```
+</details>
 
 ---
 
@@ -162,7 +183,8 @@ gcloud config set project YOUR_PROJECT_ID
 
 ## 🚀 **Complete Test Workflow**
 
-### **Test Both Clients (5 minutes):**
+<details>
+<summary><strong>🧪 Test Both Clients (5 minutes)</strong></summary>
 
 1. **Setup Authentication:**
    ```bash
@@ -186,29 +208,39 @@ gcloud config set project YOUR_PROJECT_ID
    - Create product in Python: `python mcp_test_client.py "create product"`
    - View it in Web client (refresh and list products)
    - Both see the same data but work independently
+</details>
 
 ---
 
 ## 🔧 **Troubleshooting**
 
-### **Authentication Issues:**
+<details>
+<summary><strong>🔐 Authentication Issues</strong></summary>
+
 ```bash
 # Refresh GCP authentication
 gcloud auth login
 gcloud auth print-access-token
 ```
+</details>
 
-### **Python Client Problems:**
+<details>
+<summary><strong>🐍 Python Client Problems</strong></summary>
+
 ```bash
 # Check prerequisites
 gcloud --version    # Should work
 python --version    # Should be 3.6+
 ```
+</details>
 
-### **Web Client Issues:**
+<details>
+<summary><strong>🌐 Web Client Issues</strong></summary>
+
 - **Token expired**: Get fresh token with `gcloud auth print-access-token`
 - **CORS errors**: Try different browser or use Python client
 - **Connection failed**: Verify server URL and network
+</details>
 
 ---
 
