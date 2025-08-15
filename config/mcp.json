@@ -6,8 +6,8 @@
         "-X", "POST",
         "https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp",
         "-H", "Content-Type: application/json",
-        "-H", "Authorization: Bearer ${GCLOUD_ACCESS_TOKEN}",
-        "-d", "@-"
+        "-H", "Authorization: Bearer GCP_AUTH_TOKEN",          
+        "-d", "@.vscode/payload.json"
       ]
     }
   }

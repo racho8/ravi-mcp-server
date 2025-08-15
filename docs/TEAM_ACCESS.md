@@ -40,7 +40,6 @@ Each team member needs to:
 
 3. **Use the MCP Configuration**:
    ```json
-   {
      "mcpServers": {
        "ravi-mcp-server": {
          "command": "curl",
@@ -71,7 +70,6 @@ gcloud iam service-accounts create mcp-team-testing \
 gcloud run services add-iam-policy-binding ravi-mcp-server \
   --region=europe-west3 \
   --member="serviceAccount:mcp-team-testing@your-project-id.iam.gserviceaccount.com" \
-  --role="roles/run.invoker"
 
 # Create and download key
 gcloud iam service-accounts keys create team-mcp-key.json \
@@ -90,15 +88,10 @@ gcloud auth activate-service-account --key-file=/path/to/team-mcp-key.json
 # Test authentication
 gcloud auth print-access-token
 ```
-</details>
 
 <details>
 <summary><strong>🌐 Option 3: Public Access (For Demo/Testing Only)</strong></summary>
-
-### Make Service Publicly Accessible (NOT RECOMMENDED FOR PRODUCTION)
-```bash
 gcloud run services add-iam-policy-binding ravi-mcp-server \
-  --region=europe-west3 \
   --member="allUsers" \
   --role="roles/run.invoker"
 ```
@@ -186,7 +179,3 @@ python mcp_test_client.py "list all products"
 - Individual access control
 - More secure
 </details>
-
-Would you like me to help you set up one of these options?
-
-Would you like me to help you set up one of these options?
