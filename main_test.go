@@ -20,8 +20,20 @@ func TestConfig(t *testing.T) {
 }
 
 func TestToolsAvailable(t *testing.T) {
-	expectedTools := []string{"welcome_message", "health_check", "create_product", "get_product", "update_product", "delete_product", "list_products"}
-	
+	// Updated to match latest tools in main.go
+	expectedTools := []string{
+		"welcome_message",
+		"health_check",
+		"create_product",
+		"get_product",
+		"update_product",
+		"delete_product",
+		"list_products",
+		"create_multiple_products",
+		"update_products",
+		"delete_products",
+	}
+
 	if len(tools) != len(expectedTools) {
 		t.Errorf("Expected %d tools, got %d", len(expectedTools), len(tools))
 	}

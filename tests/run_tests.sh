@@ -4,6 +4,11 @@
 # Usage: ./run_tests.sh
 
 BASE_URL="http://localhost:8080"
+
+# Allow BASE_URL override via environment variable
+if [ ! -z "$BASE_MCP_SERVER_URL" ]; then
+  BASE_URL="$BASE_MCP_SERVER_URL"
+fi
 SERVER_PID=""
 
 # Colors for output
@@ -124,6 +129,7 @@ run_test "List All Products" \
   }"'
 
 # Test 6: Create Product
+
 run_test "Create Product - MacBook Pro" \
 'curl -s -X POST '"$BASE_URL"'/mcp \
   -H "Content-Type: application/json" \
@@ -138,6 +144,60 @@ run_test "Create Product - MacBook Pro" \
         \"category\": \"Electronics\",
         \"segment\": \"Laptops\",
         \"price\": 2499
+      }
+    }
+  }"'
+
+# Test 7: Create Multiple Products
+run_test "Create Multiple Products" \
+'curl -s -X POST '"$BASE_URL"'/mcp \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"jsonrpc\": \"2.0\",
+    \"id\": 7,
+    \"method\": \"tools/call\",
+    \"params\": {
+      \"name\": \"create_multiple_products\",
+      \"arguments\": {
+        \"products\": [
+          {\"name\": \"Laptop1\", \"category\": \"Electronics\", \"segment\": \"Laptops\", \"price\": 999},
+          {\"name\": \"Laptop2\", \"category\": \"Electronics\", \"segment\": \"Laptops\", \"price\": 899}
+        ]
+      }
+    }
+  }"'
+
+# Test 8: Update Multiple Products
+run_test "Update Multiple Products" \
+'curl -s -X POST '"$BASE_URL"'/mcp \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"jsonrpc\": \"2.0\",
+    \"id\": 8,
+    \"method\": \"tools/call\",
+    \"params\": {
+      \"name\": \"update_products\",
+      \"arguments\": {
+        \"products\": [
+          {\"id\": \"PRODUCT_ID1\", \"price\": 1099},
+          {\"id\": \"PRODUCT_ID2\", \"price\": 999}
+        ]
+      }
+    }
+  }"'
+
+# Test 9: Delete Multiple Products
+run_test "Delete Multiple Products" \
+'curl -s -X POST '"$BASE_URL"'/mcp \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"jsonrpc\": \"2.0\",
+    \"id\": 9,
+    \"method\": \"tools/call\",
+    \"params\": {
+      \"name\": \"delete_products\",
+      \"arguments\": {
+        \"ids\": [\"PRODUCT_ID1\", \"PRODUCT_ID2\"]
       }
     }
   }"'

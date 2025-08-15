@@ -180,6 +180,39 @@ var tools = []ToolSchema{
 			"properties": map[string]interface{}{},
 		},
 	},
+	{
+		Name:        "create_multiple_products",
+		Description: "Create multiple products in the store",
+		InputSchema: map[string]interface{}{
+			"type": "object",
+			"properties": map[string]interface{}{
+				"products": map[string]interface{}{"type": "array"},
+			},
+			"required": []string{"products"},
+		},
+	},
+	{
+		Name:        "update_products",
+		Description: "Update multiple products at once",
+		InputSchema: map[string]interface{}{
+			"type": "object",
+			"properties": map[string]interface{}{
+				"products": map[string]interface{}{"type": "array"},
+			},
+			"required": []string{"products"},
+		},
+	},
+	{
+		Name:        "delete_products",
+		Description: "Delete multiple products at once",
+		InputSchema: map[string]interface{}{
+			"type": "object",
+			"properties": map[string]interface{}{
+				"ids": map[string]interface{}{"type": "array"},
+			},
+			"required": []string{"ids"},
+		},
+	},
 }
 
 // mcpHandler is the main handler for all JSON-RPC requests to the /mcp endpoint.
@@ -369,55 +402,103 @@ func executeToolCall(params ToolCallParams, config Config) (ToolCallResult, erro
 }
 
 // mapToolsToEndpoints maps the tool call to the correct microservice endpoint
+// mapToolsToEndpoints maps the tool call to the correct microservice endpoint
 func mapToolsToEndpoints(params ToolCallParams, config Config) (string, string, []byte, error) {
-	var method, url string
-	var body []byte
+    var method, url string
+    var body []byte
 
-	arguments, ok := params.Arguments.(map[string]interface{})
-	if !ok && params.Arguments != nil {
-		return "", "", nil, fmt.Errorf("invalid arguments format")
-	}
+    arguments, ok := params.Arguments.(map[string]interface{})
+    if !ok && params.Arguments != nil {
+        return "", "", nil, fmt.Errorf("invalid arguments format")
+    }
 
-	switch params.Name {
-	case "welcome_message":
-		method = "GET"
-		url = config.MicroserviceURL + "/"
-	case "health_check":
-		method = "GET"
-		url = config.MicroserviceURL + "/healthz"
-	case "create_product":
-		method = "POST"
-		url = config.MicroserviceURL + "/products"
-		if arguments != nil {
-			body, _ = json.Marshal(arguments)
-		}
-	case "get_product":
-		method = "GET"
-		if arguments == nil || arguments["id"] == nil {
-			return "", "", nil, fmt.Errorf("missing required parameter: id")
-		}
-		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, arguments["id"])
-	case "update_product":
-		method = "PUT"
-		if arguments == nil || arguments["id"] == nil {
-			return "", "", nil, fmt.Errorf("missing required parameter: id")
-		}
-		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, arguments["id"])
-		body, _ = json.Marshal(arguments)
-	case "delete_product":
-		method = "DELETE"
-		if arguments == nil || arguments["id"] == nil {
-			return "", "", nil, fmt.Errorf("missing required parameter: id")
-		}
-		url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, arguments["id"])
-	case "list_products":
-		method = "GET"
-		url = config.MicroserviceURL + "/products"
-	default:
-		return "", "", nil, fmt.Errorf("unsupported tool: %s", params.Name)
-	}
+    // Batch payload validation and logging
+    switch params.Name {
+    case "create_multiple_products", "update_products":
+        if arguments == nil {
+            return "", "", nil, fmt.Errorf("missing required parameter: products")
+        }
+        products, ok := arguments["products"].([]interface{})
+        if !ok {
+            return "", "", nil, fmt.Errorf("'products' must be an array")
+        }
+        log.Printf("Batch tool call: %s, products count: %d", params.Name, len(products))
+        batchBody, _ := json.Marshal(arguments)
+        if len(batchBody) > 1*1024*1024 {
+            return "", "", nil, fmt.Errorf("Batch payload exceeds 1MB limit")
+        }
+    case "delete_products":
+        if arguments == nil {
+            return "", "", nil, fmt.Errorf("missing required parameter: ids")
+        }
+        ids, ok := arguments["ids"].([]interface{})
+        if !ok {
+            return "", "", nil, fmt.Errorf("'ids' must be an array")
+        }
+        log.Printf("Batch tool call: %s, ids count: %d", params.Name, len(ids))
+        batchBody, _ := json.Marshal(arguments)
+        if len(batchBody) > 1*1024*1024 {
+            return "", "", nil, fmt.Errorf("Batch payload exceeds 1MB limit")
+        }
+    }
 
-	return method, url, body, nil
+    switch params.Name {
+    case "welcome_message":
+        method = "GET"
+        url = config.MicroserviceURL + "/"
+    case "health_check":
+        method = "GET"
+        url = config.MicroserviceURL + "/healthz"
+    case "create_product":
+        method = "POST"
+        url = config.MicroserviceURL + "/products"
+        if arguments != nil {
+            body, _ = json.Marshal(arguments)
+        }
+    case "get_product":
+        method = "GET"
+        if arguments == nil || arguments["id"] == nil {
+            return "", "", nil, fmt.Errorf("missing required parameter: id")
+        }
+        url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, arguments["id"])
+    case "update_product":
+        method = "PUT"
+        if arguments == nil || arguments["id"] == nil {
+            return "", "", nil, fmt.Errorf("missing required parameter: id")
+        }
+        url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, arguments["id"])
+        body, _ = json.Marshal(arguments)
+    case "delete_product":
+        method = "DELETE"
+        if arguments == nil || arguments["id"] == nil {
+            return "", "", nil, fmt.Errorf("missing required parameter: id")
+        }
+        url = fmt.Sprintf("%s/products/%s", config.MicroserviceURL, arguments["id"])
+    case "list_products":
+        method = "GET"
+        url = config.MicroserviceURL + "/products"
+    case "create_multiple_products":
+        method = "POST"
+        url = config.MicroserviceURL + "/products/create-multiple"
+        if arguments != nil {
+            body, _ = json.Marshal(arguments)
+        }
+    case "update_products":
+        method = "POST"
+        url = config.MicroserviceURL + "/products/update"
+        if arguments != nil {
+            body, _ = json.Marshal(arguments)
+        }
+    case "delete_products":
+        method = "POST"
+        url = config.MicroserviceURL + "/products/delete"
+        if arguments != nil {
+            body, _ = json.Marshal(arguments)
+        }
+    default:
+        return "", "", nil, fmt.Errorf("unsupported tool: %s", params.Name)
+    }
+    return method, url, body, nil
 }
 
 // sendJSONRPCResponse sends a successful JSON-RPC response
