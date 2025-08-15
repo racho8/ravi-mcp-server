@@ -453,9 +453,9 @@ func corsMiddleware(next http.Handler) http.Handler {
 		// Get allowed origins from environment or use default
 		allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
 		if allowedOrigin == "" {
-			allowedOrigin = "https://claude.ai" // Default to Claude AI only
+			allowedOrigin = "*" // Default to Claude AI only
 		}
-		
+	
 		// Set secure CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
 		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
