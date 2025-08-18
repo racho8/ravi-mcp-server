@@ -561,34 +561,15 @@ func main() {
 		config.Port = "8080"
 	}
 
-	router := mux.NewRouter()
-
-	// Health check endpoint for monitoring and testing
-	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]string{
 			"status": "healthy",
 			"service": "ravi-mcp-server",
 		})
-	}).Methods("GET")
-
-	// Add OPTIONS handler for preflight requests
-	router.HandleFunc("/mcp", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	}).Methods("OPTIONS")
-
-	// MCP handler
-	router.HandleFunc("/mcp", mcpHandler(config)).Methods("POST")
-
-	// Add CORS middleware using rs/cors
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
-		AllowedHeaders:   []string{"Authorization", "Content-Type"},
-		AllowCredentials: true,
 	})
-	handler := c.Handler(router)
+	http.HandleFunc("/mcp", mcpHandler(config))
 
 	log.Printf("Starting MCP server on port %s", config.Port)
 	log.Printf("MCP JSON-RPC 2.0 Protocol supported methods:")
@@ -596,7 +577,7 @@ func main() {
 	log.Printf("  - tools/list")
 	log.Printf("  - tools/call")
 
-	if err := http.ListenAndServe(":"+config.Port, handler); err != nil {
+	if err := http.ListenAndServe(":"+config.Port, nil); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }
