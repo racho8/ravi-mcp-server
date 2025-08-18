@@ -1,17 +1,15 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io"
-	"log"
-	"net/http"
-	"os"
+ 	"bytes"
+ 	"encoding/json"
+ 	"fmt"
+ 	"io"
+ 	"log"
+ 	"net/http"
+ 	"os"
 
-	"cloud.google.com/go/compute/metadata"
-	"github.com/gorilla/mux"
-	"github.com/rs/cors"
+ 	"cloud.google.com/go/compute/metadata"
 )
 
 // --- MCP JSON-RPC Protocol Structs ---
@@ -222,16 +220,7 @@ func mcpHandler(config Config) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		
-		// Add CORS headers to all responses
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
-		// Handle preflight OPTIONS request
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
 
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
