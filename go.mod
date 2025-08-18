@@ -7,4 +7,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 )
 
-require golang.org/x/sys v0.34.0 // indirect
+require (
+	github.com/rs/cors v1.11.1 // indirect
+	golang.org/x/sys v0.34.0 // indirect
+)

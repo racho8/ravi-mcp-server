@@ -11,6 +11,7 @@ import (
 
 	"cloud.google.com/go/compute/metadata"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 // --- MCP JSON-RPC Protocol Structs ---
@@ -218,7 +219,20 @@ var tools = []ToolSchema{
 // mcpHandler is the main handler for all JSON-RPC requests to the /mcp endpoint.
 // It implements the MCP JSON-RPC 2.0 protocol with proper method routing.
 func mcpHandler(config Config) http.HandlerFunc {
+
 	return func(w http.ResponseWriter, r *http.Request) {
+		
+		// Add CORS headers to all responses
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		// Handle preflight OPTIONS request
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 			return
@@ -519,46 +533,14 @@ func sendJSONRPCError(w http.ResponseWriter, id interface{}, code int, message s
 		JSONRPC: "2.0",
 		ID:      id,
 		Error: &JSONRPCError{
-			Code:    code,
-			Message: message,
-			Data:    data,
+ 			Code:    code,
+ 			Message: message,
+ 			Data:    data,
 		},
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
-}
-
-func corsMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Get allowed origins from environment or use default
-		allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
-		if allowedOrigin == "" {
-			allowedOrigin = "*" // Default to Claude AI only
-		}
-	
-		// Set secure CORS headers
-		w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
-		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		w.Header().Set("Access-Control-Allow-Credentials", "false") // Disable credentials for security
-		w.Header().Set("Access-Control-Max-Age", "86400") // Cache preflight for 24 hours
-
-		// Add security headers
-		w.Header().Set("X-Content-Type-Options", "nosniff")
-		w.Header().Set("X-Frame-Options", "DENY")
-		w.Header().Set("X-XSS-Protection", "1; mode=block")
-		w.Header().Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
-		w.Header().Set("Content-Security-Policy", "default-src 'self'")
-
-		// Handle preflight OPTIONS request
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
 }
 
 func main() {
@@ -580,10 +562,7 @@ func main() {
 	}
 
 	router := mux.NewRouter()
-	
-	// Add CORS middleware
-	router.Use(corsMiddleware)
-	
+
 	// Health check endpoint for monitoring and testing
 	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -593,21 +572,31 @@ func main() {
 			"service": "ravi-mcp-server",
 		})
 	}).Methods("GET")
-	
+
 	// Add OPTIONS handler for preflight requests
 	router.HandleFunc("/mcp", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}).Methods("OPTIONS")
-	
+
+	// MCP handler
 	router.HandleFunc("/mcp", mcpHandler(config)).Methods("POST")
+
+	// Add CORS middleware using rs/cors
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type"},
+		AllowCredentials: true,
+	})
+	handler := c.Handler(router)
 
 	log.Printf("Starting MCP server on port %s", config.Port)
 	log.Printf("MCP JSON-RPC 2.0 Protocol supported methods:")
 	log.Printf("  - initialize")
 	log.Printf("  - tools/list")
 	log.Printf("  - tools/call")
-	
-	if err := http.ListenAndServe(":"+config.Port, router); err != nil {
+
+	if err := http.ListenAndServe(":"+config.Port, handler); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }
