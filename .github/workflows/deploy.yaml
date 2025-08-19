@@ -40,7 +40,7 @@ jobs:
       - name: Start MCP server for testing
         run: |
           export MICROSERVICE_URL="${{ env.MICROSERVICE_URL }}"
-          go run main.go &
+          go run . &
           SERVER_PID=$!
           echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
           
@@ -84,7 +84,7 @@ jobs:
           if [ ! -z "$SERVER_PID" ]; then
             kill $SERVER_PID || true
           fi
-          pkill -f "go run main.go" || true
+          pkill -f "go run ." || true
 
   build-and-deploy:
     runs-on: ubuntu-latest
