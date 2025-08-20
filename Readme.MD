@@ -1,236 +1,185 @@
-# MCP Server
+# Ravi MCP Server
 
-A **Model Context Protocol (MCP)** server that provides product management capabilities through a clean JSON-RPC 2.0 API. Deployed on Google Cloud Run with auto-scaling and high availability.
+A Model Context Protocol (MCP) server for product management via JSON-RPC 2.0.
 
-- Google Cloud credentials: Authentication token
-<details>
-<summary>Quick Test (2 minutes)</summary>
+## Overview
 
-### For New Contributors: Get Access
+This project implements a MCP wrapper server using the Model Context Protocol (MCP) that allows AI agents to interact with a microservice called product service that provides the product data.
 
-**Required for Testing:**
-- MICROSERVICE_URL: Backend service endpoint
-- Google Cloud credentials: Authentication token
+It provides tools for:
 
-**How to get access:**
-1. Contact Repository Owner: Reach out to [@racho8](https://github.com/racho8) via:
-  - GitHub Issues: [Create new issue](https://github.com/racho8/ravi-mcp-server/issues/new)
-  - Email: (see GitHub profile)
-  - Slack/Teams: (if you're on the same team)
-2. What to include in your request:
-  - Your GitHub username
-  - Intended use case (testing, development, integration)
-  - Google Cloud account email (for IAM permissions)
-3. What you'll receive:
-  - MICROSERVICE_URL endpoint
-  - Google Cloud project access
-  - Setup instructions specific to your use case
-
-For Team Members: See [`docs/TEAM_ACCESS.md`](docs/TEAM_ACCESS.md) for detailed access setup.
-
-### 1. Get Access Token (After Getting Access)
-
-```bash
-gcloud auth login
-gcloud auth print-access-token
-```
-
-### 2.Available Tools
-<details>
-<summary>Available Tools</summary>
-
-| Tool                    | Purpose                              | Example Usage                                 |
-|-------------------------|--------------------------------------|-----------------------------------------------|
-| list_products           | Get all products                     | "show me all products"                        |
-| create_product          | Add new product                      | "create product: Laptop, Electronics, $999"   |
-| get_product             | Get specific product                 | "get product with ID 123"                     |
-| update_product          | Modify product                       | "update product 123 price to $899"            |
-| delete_product          | Remove product                       | "delete product 123"                          |
-| create_multiple_products| Add multiple products                | "add these products: [...]"                   |
-| update_products         | Update multiple products at once     | "update these products: [...]"                |
-| delete_products         | Delete multiple products at once     | "delete these products: [...]"                |
-| health_check            | Server status                        | "health check"                                |
-
-</details>
-
-go version  # Should be 1.23+
-go test -v ./...
-go run main.go
+- Listing available products
+- Creating, updating, and deleting products
+- Bulk product operations
+- Health check and welcome message
 
 <details>
-<summary>RPIM-API-Service Tools</summary>
+<summary>Architecture Diagram</summary>
 
-### How to Run RPIM Tools
-
-**Required Environment Variable:**
-
-Set the RPIM API service URL before running the server or tests:
-
-```bash
-export RPIM_API_URL="https://rpim-api-service-385153724914.europe-west3.run.app"
-```
-
-**Example: Run MCP server with RPIM tools enabled**
-
-```bash
-export RPIM_API_URL="https://rpim-api-service-385153724914.europe-west3.run.app"
-export MICROSERVICE_URL="<your_product_service_url>"
-export PORT=8080
-go run main.go
-```
-
-**Example: Call RPIM tool via JSON-RPC**
-
-```bash
-curl -H "Authorization: Bearer <YOUR_TOKEN>" \
-  <SERVER_URL>/mcp \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"rpim_get_class_units","arguments":{}}}'
-```
-
-**Example: Call RPIM child items tool**
-
-```bash
-curl --location "$RPIM_API_URL/api/v1/item-content" \
-  --header "Authorization: Bearer <YOUR_TOKEN>" \
-  --header "Content-Type: application/json" \
-  --data '[{"itemNo": "20431739", "itemType": "ART", "classUnitCode": "GB", "classUnitType": "RU"}]'
-```
-
-**Available RPIM Tools:**
-
-| Tool Name                  | Description                       |
-|----------------------------|-----------------------------------|
-| rpim_health_check          | Health check for RPIM API         |
-| rpim_get_child_items       | Get child items                   |
-| rpim_get_item_keys         | Get item keys                     |
-| rpim_get_class_units       | Get class units                   |
-| rpim_get_item_details      | Get item details                  |
-| rpim_get_local_items       | Get local items                   |
-| rpim_get_updated_items     | Get updated items                 |
-| rpim_get_classified_items  | Get classified items              |
-| rpim_get_item_attributes   | Get item attributes               |
-| rpim_get_items_by_class_unit| Get items by class unit           |
-
-See the Postman collection for sample payloads and endpoint details.
-
-
-### For New Contributors: Setup Requirements
-
-**Required Configuration:**
-- MICROSERVICE_URL: Backend service endpoint (contact repository owner)
-- Google Cloud credentials: Project access for authentication
-
-**To get started with local development:**
-1. Request access from [@racho8](https://github.com/racho8) (see "Quick Test" section above)
-2. Follow the setup steps below after receiving your configuration
-
-### Setup Go Environment
-
-```bash
-./setup-go-env.sh
-go version  # Should be 1.23+
-```
-
-### Run Locally (After Getting Access)
-
-```bash
-go mod download
-go test -v ./...
-export MICROSERVICE_URL="<MICROSERVICE_URL_PROVIDED_BY_OWNER>"
-export PORT="8080"
-go run main.go
-curl http://localhost:8080/health
-```
-
-**Tip:** Create a `.env` file with your environment variables for convenience:
-```bash
-MICROSERVICE_URL=<your_microservice_url>
-PORT=8080
-```
-
-</details>
-
-<details>
-<summary>Integration</summary>
-
-## Project Structure
-
-```
-ravi-mcp-server/
-├── main.go                        # Core server
-├── business.go                    # Product business logic
-├── handlers.go                    # HTTP handlers
-├── models.go                      # Data models
-├── tools.go                       # Tool schemas
-
-├── config/                        # MCP configurations
-│   └── MCP_CONFIGURATION.md      # MCP config doc
-├── docs/                          # Team access & diagrams
-│   └── TEAM_ACCESS.md            # Team authentication
-│   └── architecture-diagram.svg  # Architecture diagram
-├── tests/                         # Test scripts & Postman
-│   ├── POSTMAN_IMPORT.md         # Postman import guide
-│   ├── postman_collection_v2.json# Postman collection
-│   ├── run_tests.sh              # Automated test runner
-│   └── test_commands.sh          # Manual cURL commands
-├── setup-go-env.sh               # Environment setup
-├── Dockerfile                    # Container build
-├── go.mod, go.sum                # Go modules
-```
-
-gcloud run services describe ravi-mcp-server \
-gcloud run services add-iam-policy-binding ravi-mcp-server \
-<details>
-<summary>Deployment & Management</summary>
-
-### Cloud Run Commands (For Authorized Users)
-
-```bash
-gcloud run services update ravi-mcp-server \
-    --region=europe-west3 \
-    --set-env-vars "MICROSERVICE_URL=<MICROSERVICE_URL>"
-gcloud run services describe ravi-mcp-server \
-  --region=europe-west3 \
-  --format="value(spec.template.spec.containers[0].env)"
-gcloud run services add-iam-policy-binding ravi-mcp-server \
-  --region=europe-west3 \
-  --member="user:teammate@domain.com" \
-  --role="roles/run.invoker"
-```
-
-**Note:** These commands require Google Cloud project access. Contact repository owner for permissions.
-
-### Required Secrets (For Contributors with Deploy Access)
-
-For GitHub Actions deployment, these secrets must be configured:
-- GCP_SA_KEY: Google Cloud service account key
-- GCP_PROJECT_ID: Google Cloud project ID
-- MICROSERVICE_URL: Backend microservice endpoint
-- ALLOWED_ORIGIN: CORS allowed origin
-
-**Setup Guide:** Contact the repository owner for security and deployment instructions.
-
-</details>
-
-<details>
-<summary>Need More Details?</summary>
-
-- Team Setup: [`docs/TEAM_ACCESS.md`](docs/TEAM_ACCESS.md) - Team authentication
-- Configuration: [`config/MCP_CONFIGURATION.md`](config/MCP_CONFIGURATION.md) - MCP setup
-- Postman Import: [`tests/POSTMAN_IMPORT.md`](tests/POSTMAN_IMPORT.md) - Postman import guide
+![Architecture Diagram](docs/architecture-diagram.svg)
 
 </details>
 
 
 
-## ⚡️ Latest Changes & Migration Notes
+## Installation
 
-- Security and some test documentation files have been removed.
-- Only the following tools are available:
-  - `welcome_message`, `health_check`, `create_product`, `get_product`, `update_product`, `delete_product`, `list_products`, `create_multiple_products`, `update_products`, `delete_products`
-- All Go files use `package main` and there are no local imports.
-- The only required environment variable is `MICROSERVICE_URL`.
-- The server exposes `/health` and `/mcp` endpoints.
-- Use `tests/run_tests.sh` for automated testing and `tests/test_commands.sh` for manual cURL commands.
-- For configuration, see `config/MCP_CONFIGURATION.md` and for team access, see `docs/TEAM_ACCESS.md`.
-- The project structure has been simplified and some files have been removed.
+<details>
+<summary>Manual Installation</summary>
+
+<b>Prerequisites</b>
+
+- Go 1.23+
+- Access to a product microservice (ask repo owner for MICROSERVICE_URL)
+
+<b>Setup</b>
+1. Clone this repository
+2. Install dependencies:
+  ```bash
+  go mod download
+  ```
+3. Set environment variables:
+  ```bash
+  export MICROSERVICE_URL="<your_microservice_url>"
+  export PORT=8080
+  ```
+4. Run the server:
+  ```bash
+  go run main.go
+  # or
+  go run .
+  ```
+5. Test health endpoint:
+  ```bash
+  curl http://localhost:8080/health
+  ```
+6. Use `/mcp` endpoint for JSON-RPC requests (see `tests/test_commands.sh` for examples)
+
+</details>
+
+
+## Available Tools
+
+- `list_products` — List all products
+- `create_product` — Add a new product
+- `get_product` — Get product details by ID
+- `update_product` — Update product by ID
+- `delete_product` — Delete product by ID
+- `create_multiple_products` — Add multiple products
+- `update_products` — Update multiple products
+- `delete_products` — Delete multiple products
+- `health_check` — Check server status
+- `welcome_message` — Get welcome message
+
+
+
+## Using Ravi MCP Server with GitHub Copilot Agent
+
+<details>
+<summary>Show details</summary>
+
+To use this remote MCP server with GitHub Copilot agent mode (or any MCP-compatible client):
+
+<b>1. Add <code>mcp.json</code> to your workspace (recommended location: <code>.vscode/mcp.json</code>)</b>
+
+Example structure:
+```json
+{
+  "servers": {
+    "ravi-mcp-server": {
+      "command": "curl",
+      "args": [
+        "-X", "POST",
+        "https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp",
+        "-H", "Content-Type: application/json",
+        "-H", "Authorization: Bearer GCP_AUTH_TOKEN",
+        "-d", "@.vscode/payload.json"
+      ]
+    }
+  }
+}
+```
+
+<b>2. Authentication Token</b>
+
+- You must provide a valid Google Cloud Bearer token for authentication.
+- Recommended: Use `gcloud auth print-identity-token` to generate a token.
+- Set the token in your environment or update the `mcp.json` as needed.
+
+<b>3. Example Usage</b>
+
+- With configuration in place, you can use natural language commands in Copilot agent mode, e.g.:
+  - "List all products"
+  - "Create a new product called 'iPhone 15' for $999"
+
+<b>4. Sample payload.json</b>
+
+Your `.vscode/payload.json` file is referenced in `mcp.json` and should contain a valid MCP JSON-RPC request. Example:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/list"
+}
+```
+
+You can modify this file to call any tool, e.g.:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "tools/call",
+  "params": {
+    "name": "list_products"
+  }
+}
+```
+
+<b>5. More Info</b>
+
+- See [`config/MCP_CONFIGURATION.md`](config/MCP_CONFIGURATION.md) for advanced configuration and troubleshooting.
+- For team access setup, see [`docs/TEAM_ACCESS.md`](docs/TEAM_ACCESS.md).
+
+</details>
+
+
+## Troubleshooting
+
+<details>
+<summary>Show details</summary>
+
+If you encounter issues:
+
+1. Ensure your `MICROSERVICE_URL` is correct and accessible
+2. Check Go version (should be 1.23+)
+3. Review error messages in server logs
+
+</details>
+
+## Best Practices for Natural Language Querying
+
+<details>
+<summary>Show details</summary>
+
+To smoothly query and see results in natural language, follow these steps before interacting with the MCP server:
+
+1. **Export your GCP authentication token:**
+  ```sh
+  export gcp_auth_token="YourGCPTOKEN"
+  ```
+
+2. **Set the context for your agent (e.g., GitHub Copilot agent chat):**
+  > Prompt: *Automatically generate and execute the corresponding cURL requests asynchronously in the background, actively displaying the results in plain text format, preferably structured as well-organized tables or lists for enhanced readability. No prior approval of individual cURL commands is necessary prior to execution.*
+
+By following these steps, you will receive only the relevant results in a clean, readable format, without being interrupted by underlying command details or approval prompts.
+
+3. **Use natural language commands to query the MCP server. Example commands:**
+  - show me all the available tools
+  - Show all the products
+  - List all products under Electronics category
+  - Increment the price of all the products under Electronics category by 3%
+  - Round up the price of all the products under Laptops segment to nearest 100
+
+</details>
