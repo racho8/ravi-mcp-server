@@ -20,24 +20,38 @@ func TestConfig(t *testing.T) {
 }
 
 func TestToolsAvailable(t *testing.T) {
-	// Updated to match latest tools in main.go
+	// List of all tool names currently registered in tools.go
+	// Update this list if you add/remove tools in tools.go
 	expectedTools := []string{
-		"welcome_message",
-		"health_check",
-		"create_product",
-		"get_product",
-		"update_product",
-		"delete_product",
-		"list_products",
-		"create_multiple_products",
-		"update_products",
-		"delete_products",
+		"welcome_message",           // Product service: welcome message
+		"health_check",              // Product service: health check
+		"create_product",            // Product service: create product
+		"get_product",               // Product service: get product by ID
+		"update_product",            // Product service: update product by ID
+		"delete_product",            // Product service: delete product by ID
+		"list_products",             // Product service: list all products
+		"create_multiple_products",  // Product service: batch create
+		"update_products",           // Product service: batch update
+		"delete_products",           // Product service: batch delete
+		// rpim-api-service tools below
+		"rpim_health_check",         // RPIM: health check
+		"rpim_get_child_items",      // RPIM: get child items
+		"rpim_get_item_keys",        // RPIM: get item keys
+		"rpim_get_class_units",      // RPIM: get class units
+		"rpim_get_item_details",     // RPIM: get item details
+		"rpim_get_local_items",      // RPIM: get local items
+		"rpim_get_updated_items",    // RPIM: get updated items
+		"rpim_get_classified_items", // RPIM: get classified items
+		"rpim_get_item_attributes",  // RPIM: get item attributes
+		"rpim_get_items_by_class_unit", // RPIM: get items by class unit
 	}
 
+	// Ensure the number of tools matches
 	if len(tools) != len(expectedTools) {
-		t.Errorf("Expected %d tools, got %d", len(expectedTools), len(tools))
+		t.Errorf("Expected %d tools, got %d. If you added/removed tools, update expectedTools in main_test.go.", len(expectedTools), len(tools))
 	}
 
+	// Ensure tool names match
 	for i, tool := range tools {
 		if i < len(expectedTools) && tool.Name != expectedTools[i] {
 			t.Errorf("Expected tool %d to be '%s', got '%s'", i, expectedTools[i], tool.Name)

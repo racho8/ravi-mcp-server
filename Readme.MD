@@ -104,8 +104,63 @@ curl -H "Authorization: Bearer $(gcloud auth print-access-token)" \
 go version  # Should be 1.23+
 go test -v ./...
 go run main.go
+
 <details>
-<summary>Local Development</summary>
+<summary>RPIM-API-Service Tools</summary>
+
+### How to Run RPIM Tools
+
+**Required Environment Variable:**
+
+Set the RPIM API service URL before running the server or tests:
+
+```bash
+export RPIM_API_URL="https://rpim-api-service-385153724914.europe-west3.run.app"
+```
+
+**Example: Run MCP server with RPIM tools enabled**
+
+```bash
+export RPIM_API_URL="https://rpim-api-service-385153724914.europe-west3.run.app"
+export MICROSERVICE_URL="<your_product_service_url>"
+export PORT=8080
+go run main.go
+```
+
+**Example: Call RPIM tool via JSON-RPC**
+
+```bash
+curl -H "Authorization: Bearer <YOUR_TOKEN>" \
+  <SERVER_URL>/mcp \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"rpim_get_class_units","arguments":{}}}'
+```
+
+**Example: Call RPIM child items tool**
+
+```bash
+curl --location "$RPIM_API_URL/api/v1/item-content" \
+  --header "Authorization: Bearer <YOUR_TOKEN>" \
+  --header "Content-Type: application/json" \
+  --data '[{"itemNo": "20431739", "itemType": "ART", "classUnitCode": "GB", "classUnitType": "RU"}]'
+```
+
+**Available RPIM Tools:**
+
+| Tool Name                  | Description                       |
+|----------------------------|-----------------------------------|
+| rpim_health_check          | Health check for RPIM API         |
+| rpim_get_child_items       | Get child items                   |
+| rpim_get_item_keys         | Get item keys                     |
+| rpim_get_class_units       | Get class units                   |
+| rpim_get_item_details      | Get item details                  |
+| rpim_get_local_items       | Get local items                   |
+| rpim_get_updated_items     | Get updated items                 |
+| rpim_get_classified_items  | Get classified items              |
+| rpim_get_item_attributes   | Get item attributes               |
+| rpim_get_items_by_class_unit| Get items by class unit           |
+
+See the Postman collection for sample payloads and endpoint details.
+
 
 ### For New Contributors: Setup Requirements
 

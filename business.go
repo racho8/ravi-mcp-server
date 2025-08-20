@@ -9,6 +9,7 @@ import (
 )
 
 const productServiceBaseURL = "https://product-service-256110662801.europe-west3.run.app"
+const rpimApiBaseURL = "https://rpim-api-service-256110662801.europe-west3.run.app"
 
 
 // Business logic functions for MCP server
@@ -34,12 +35,82 @@ func executeToolCall(toolName string, params map[string]interface{}) (interface{
 		return updateProducts(params)
 	case "delete_products":
 		return deleteProducts(params)
+	case "rpim_health_check":
+		return rpimHealthCheck(params)
+	case "rpim_get_child_items":
+		return rpimGetChildItems(params)
+	case "rpim_get_item_keys":
+		return rpimGetItemKeys(params)
+	case "rpim_get_class_units":
+		return rpimGetClassUnits(params)
+	case "rpim_get_item_details":
+		return rpimGetItemDetails(params)
+	case "rpim_get_local_items":
+		return rpimGetLocalItems(params)
+	case "rpim_get_updated_items":
+		return rpimGetUpdatedItems(params)
+	case "rpim_get_classified_items":
+		return rpimGetClassifiedItems(params)
+	case "rpim_get_item_attributes":
+		return rpimGetItemAttributes(params)
+	case "rpim_get_items_by_class_unit":
+		return rpimGetItemsByClassUnit(params)
 	default:
 		return nil, fmt.Errorf("unknown tool: %s", toolName)
 	}
 }
 
 // Example business logic implementations
+// rpim-api-service business logic
+func rpimHealthCheck(params map[string]interface{}) (interface{}, error) {
+	url := rpimApiBaseURL + "/health"
+	return invokeMicroservice("GET", url, nil)
+}
+
+func rpimGetChildItems(params map[string]interface{}) (interface{}, error) {
+	url := rpimApiBaseURL + "/api/v1/item-content"
+	return invokeMicroservice("POST", url, params)
+}
+
+func rpimGetItemKeys(params map[string]interface{}) (interface{}, error) {
+	url := rpimApiBaseURL + "/items/keys"
+	return invokeMicroservice("POST", url, params)
+}
+
+func rpimGetClassUnits(params map[string]interface{}) (interface{}, error) {
+	url := rpimApiBaseURL + "/class-units"
+	return invokeMicroservice("GET", url, nil)
+}
+
+func rpimGetItemDetails(params map[string]interface{}) (interface{}, error) {
+	url := rpimApiBaseURL + "/items/details"
+	return invokeMicroservice("POST", url, params)
+}
+
+func rpimGetLocalItems(params map[string]interface{}) (interface{}, error) {
+	url := rpimApiBaseURL + "/items/local"
+	return invokeMicroservice("POST", url, params)
+}
+
+func rpimGetUpdatedItems(params map[string]interface{}) (interface{}, error) {
+	url := rpimApiBaseURL + "/items/updated"
+	return invokeMicroservice("POST", url, params)
+}
+
+func rpimGetClassifiedItems(params map[string]interface{}) (interface{}, error) {
+	url := rpimApiBaseURL + "/items/classified"
+	return invokeMicroservice("POST", url, params)
+}
+
+func rpimGetItemAttributes(params map[string]interface{}) (interface{}, error) {
+	url := rpimApiBaseURL + "/items/attributes"
+	return invokeMicroservice("POST", url, params)
+}
+
+func rpimGetItemsByClassUnit(params map[string]interface{}) (interface{}, error) {
+	url := rpimApiBaseURL + "/items/by-class-unit"
+	return invokeMicroservice("POST", url, params)
+}
 
 func deleteProducts(params map[string]interface{}) (interface{}, error) {
 	url := productServiceBaseURL + "/products/delete"
