@@ -110,4 +110,130 @@ var tools = []ToolSchema{
 			"required": []string{"ids"},
 		},
 	},
+	// RPIM Tools
+	{
+		Name:        "rpim_health_check",
+		Description: "Health check for rpim-api-service",
+		InputSchema: map[string]interface{}{
+			"type":       "object",
+			"properties": map[string]interface{}{},
+		},
+	},
+	{
+		Name:        "rpim_get_child_items",
+		Description: "Get child items from rpim-api-service",
+		InputSchema: map[string]interface{}{
+			"type": "array",
+			"items": map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"itemNo":         map[string]string{"type": "string"},
+					"itemType":       map[string]string{"type": "string"},
+					"classUnitCode":  map[string]string{"type": "string"},
+					"classUnitType":  map[string]string{"type": "string"},
+				},
+				"required": []string{"itemNo", "itemType", "classUnitCode", "classUnitType"},
+			},
+		},
+	},
+	{
+		Name:        "rpim_get_item_keys",
+		Description: "Get item keys from rpim-api-service",
+		InputSchema: map[string]interface{}{
+			"type": "object",
+			"properties": map[string]interface{}{
+				"classUnitCode": map[string]string{"type": "string"},
+			},
+			"required": []string{"classUnitCode"},
+		},
+	},
+	{
+		Name:        "rpim_get_class_units",
+		Description: "Get class units from rpim-api-service",
+		InputSchema: map[string]interface{}{
+			"type":       "object",
+			"properties": map[string]interface{}{},
+		},
+	},
+	{
+		Name:        "rpim_get_item_details",
+		Description: "Get item details from rpim-api-service",
+		InputSchema: map[string]interface{}{
+			"type": "array",
+			"items": map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"itemNo":         map[string]string{"type": "string"},
+					"itemType":       map[string]string{"type": "string"},
+					"classUnitCode":  map[string]string{"type": "string"},
+					"classUnitType":  map[string]string{"type": "string"},
+				},
+				"required": []string{"itemNo", "itemType", "classUnitCode", "classUnitType"},
+			},
+		},
+	},
+	{
+		Name:        "rpim_get_local_items",
+		Description: "Get local items from rpim-api-service",
+		InputSchema: map[string]interface{}{
+			"type": "array",
+			"items": map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"itemNo":         map[string]string{"type": "string"},
+					"itemType":       map[string]string{"type": "string"},
+					"classUnitCode":  map[string]string{"type": "string"},
+					"classUnitType":  map[string]string{"type": "string"},
+				},
+				"required": []string{"itemNo", "itemType", "classUnitCode", "classUnitType"},
+			},
+		},
+	},
+	{
+		Name:        "rpim_get_updated_items",
+		Description: "Get updated items from rpim-api-service",
+		InputSchema: map[string]interface{}{
+			"type": "object",
+			"properties": map[string]interface{}{
+				"lastRunTime":    map[string]string{"type": "string"},
+				"currentRunTime": map[string]string{"type": "string"},
+			},
+			"required": []string{"lastRunTime", "currentRunTime"},
+		},
+	},
+	{
+		Name:        "rpim_get_classified_items",
+		Description: "Get all commercially classified items from rpim-api-service",
+		InputSchema: map[string]interface{}{
+			"type": "object",
+			"properties": map[string]interface{}{
+				"classUnitCode":       map[string]string{"type": "string"},
+				"classificationType":  map[string]string{"type": "string"},
+			},
+			"required": []string{"classUnitCode", "classificationType"},
+		},
+	},
+	{
+		Name:        "rpim_get_item_attributes",
+		Description: "Get item attributes from rpim-api-service",
+		InputSchema: map[string]interface{}{
+			"type": "object",
+			"properties": map[string]interface{}{
+				"itemType": map[string]string{"type": "string"},
+				"itemNo":   map[string]string{"type": "string"},
+			},
+			"required": []string{"itemType", "itemNo"},
+		},
+	},
+	{
+		Name:        "rpim_get_items_by_class_unit",
+		Description: "Get items by class unit from rpim-api-service",
+		InputSchema: map[string]interface{}{
+			"type": "object",
+			"properties": map[string]interface{}{
+				"classUnitCode": map[string]string{"type": "string"},
+			},
+			"required": []string{"classUnitCode"},
+		},
+	},
 }

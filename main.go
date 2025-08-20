@@ -1,10 +1,9 @@
-
 package main
 
 import (
-	"log"
-	"net/http"
-	"os"
+    "log"
+    "net/http"
+    "os"
 )
 
 func main() {

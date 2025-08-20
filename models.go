@@ -73,6 +73,7 @@ type ToolContent struct {
 }
 
 type Config struct {
-	MicroserviceURL string
-	Port            string
+	MicroserviceURL string // product-service base URL
+	RPIMApiURL      string // rpim-api-service base URL
+	Port            string // server port
 }
