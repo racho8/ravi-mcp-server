@@ -11,7 +11,6 @@ import (
 const productServiceBaseURL = "https://product-service-256110662801.europe-west3.run.app"
 const rpimApiBaseURL = "https://rpim-api-service-256110662801.europe-west3.run.app"
 
-
 // Business logic functions for MCP server
 func executeToolCall(toolName string, params map[string]interface{}) (interface{}, error) {
 	switch toolName {
@@ -60,7 +59,6 @@ func executeToolCall(toolName string, params map[string]interface{}) (interface{
 	}
 }
 
-// Example business logic implementations
 // rpim-api-service business logic
 func rpimHealthCheck(params map[string]interface{}) (interface{}, error) {
 	url := rpimApiBaseURL + "/health"
@@ -162,7 +160,6 @@ func updateProducts(params map[string]interface{}) (interface{}, error) {
 	url := productServiceBaseURL + "/products/update"
 	return invokeMicroservice("POST", url, params)
 }
-
 
 // Helper to make HTTP requests to microservice and parse response
 func invokeMicroservice(method, url string, params map[string]interface{}) (interface{}, error) {
