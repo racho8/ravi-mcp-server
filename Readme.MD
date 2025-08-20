@@ -35,55 +35,7 @@ gcloud auth login
 gcloud auth print-access-token
 ```
 
-### 2. Choose Your Testing Method
-
-**Option A: Web Client (Easiest)**
-```bash
-cd mcp-clients
-open mcp_web_client.html
-# Paste your token and test in browser
-```
-
-**Option B: Python Client**
-```bash
-cd mcp-clients
-python mcp_test_client.py "list all products"
-```
-
-**Option C: Direct API Call**
-```bash
-curl -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-  <SERVER_URL>/mcp \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"health_check","arguments":{}}}'
-```
-
-</details>
-gcloud auth print-access-token
-```
-
-### 2. Choose Your Testing Method
-
-**Option A: Web Client (Easiest)**
-```bash
-cd mcp-clients
-open mcp_web_client.html
-# Paste your token and test in browser
-```
-
-**Option B: Python Client**
-```bash
-cd mcp-clients
-python mcp_test_client.py "list all products"
-```
-
-**Option C: Direct API Call**
-```bash
-curl -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-  <SERVER_URL>/mcp \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"health_check","arguments":{}}}'
-```
-
-
+### 2.Available Tools
 <details>
 <summary>Available Tools</summary>
 
@@ -116,7 +68,6 @@ go run main.go
 **To get started with local development:**
 1. Request access from [@racho8](https://github.com/racho8) (see "Quick Test" section above)
 2. Follow the setup steps below after receiving your configuration
-3. See [`SECURITY.md`](SECURITY.md) for detailed security guidelines
 
 ### Setup Go Environment
 
@@ -147,39 +98,29 @@ PORT=8080
 <details>
 <summary>Integration</summary>
 
-### Claude Desktop (After Getting Access)
-
-```bash
-cp config/mcp.json ~/.config/claude/claude_desktop_config.json
-# Update the configuration file with:
-# 1. Server URL provided by repository owner
-# 2. Your authentication method (see SECURITY.md)
-# Restart Claude Desktop, then ask: "Show me all products"
-```
-
-**Note:** You'll need to update the MCP configuration with the actual server URL provided by the repository owner.
-
-### Custom Applications
-
-- Endpoint: Contact [@racho8](https://github.com/racho8) for server URL
-- Protocol: MCP JSON-RPC 2.0
-- Auth: Google Cloud Bearer tokens
-- Documentation: See [`config/MCP_CONFIGURATION.md`](config/MCP_CONFIGURATION.md)
-
-</details>
-
 ## Project Structure
 
 ```
 ravi-mcp-server/
 ├── main.go                        # Core server
-├── mcp-clients/                   # Testing clients
-│   ├── mcp_test_client.py        # Python CLI
-│   └── mcp_web_client.html       # Web GUI
+├── business.go                    # Product business logic
+├── handlers.go                    # HTTP handlers
+├── models.go                      # Data models
+├── tools.go                       # Tool schemas
+
 ├── config/                        # MCP configurations
-├── docs/                          # Detailed guides
-├── tests/                         # Complete testing suite
-└── setup-go-env.sh               # Environment setup
+│   └── MCP_CONFIGURATION.md      # MCP config doc
+├── docs/                          # Team access & diagrams
+│   └── TEAM_ACCESS.md            # Team authentication
+│   └── architecture-diagram.svg  # Architecture diagram
+├── tests/                         # Test scripts & Postman
+│   ├── POSTMAN_IMPORT.md         # Postman import guide
+│   ├── postman_collection_v2.json# Postman collection
+│   ├── run_tests.sh              # Automated test runner
+│   └── test_commands.sh          # Manual cURL commands
+├── setup-go-env.sh               # Environment setup
+├── Dockerfile                    # Container build
+├── go.mod, go.sum                # Go modules
 ```
 
 gcloud run services describe ravi-mcp-server \
@@ -212,35 +153,29 @@ For GitHub Actions deployment, these secrets must be configured:
 - MICROSERVICE_URL: Backend microservice endpoint
 - ALLOWED_ORIGIN: CORS allowed origin
 
-**Setup Guide:** See [`SECURITY.md`](SECURITY.md) for detailed instructions.
+**Setup Guide:** Contact the repository owner for security and deployment instructions.
 
 </details>
 
 <details>
 <summary>Need More Details?</summary>
 
-- Security & Access: [`SECURITY.md`](SECURITY.md) - Security guidelines and setup
-- Testing: [`tests/README.md`](tests/README.md) - Comprehensive testing guide
-- Client Usage: [`mcp-clients/README.md`](mcp-clients/README.md) - Complete client guide
 - Team Setup: [`docs/TEAM_ACCESS.md`](docs/TEAM_ACCESS.md) - Team authentication
 - Configuration: [`config/MCP_CONFIGURATION.md`](config/MCP_CONFIGURATION.md) - MCP setup
+- Postman Import: [`tests/POSTMAN_IMPORT.md`](tests/POSTMAN_IMPORT.md) - Postman import guide
 
 </details>
 
 
-<details>
-<summary>Getting Started as a New User</summary>
 
-**New to this repository?**
-1. Contact [@racho8](https://github.com/racho8) for access credentials
-2. Read [`SECURITY.md`](SECURITY.md) for security best practices
-3. Start with the web client for easiest testing experience
-4. Follow team setup guide in [`docs/TEAM_ACCESS.md`](docs/TEAM_ACCESS.md)
+## ⚡️ Latest Changes & Migration Notes
 
-**Already have access?** Jump to "Quick Test" section above!
-
-</details>
-
----
-
-**Ready to contribute?** All credentials and URLs are managed securely through environment variables and GitHub Secrets. Contact the repository owner for access!
+- Security and some test documentation files have been removed.
+- Only the following tools are available:
+  - `welcome_message`, `health_check`, `create_product`, `get_product`, `update_product`, `delete_product`, `list_products`, `create_multiple_products`, `update_products`, `delete_products`
+- All Go files use `package main` and there are no local imports.
+- The only required environment variable is `MICROSERVICE_URL`.
+- The server exposes `/health` and `/mcp` endpoints.
+- Use `tests/run_tests.sh` for automated testing and `tests/test_commands.sh` for manual cURL commands.
+- For configuration, see `config/MCP_CONFIGURATION.md` and for team access, see `docs/TEAM_ACCESS.md`.
+- The project structure has been simplified and some files have been removed.
