@@ -2,8 +2,6 @@
 
 A Model Context Protocol (MCP) server for product management via JSON-RPC 2.0.
 
-
-
 ## Overview
 
 This project implements a MCP wrapper server using the Model Context Protocol (MCP) that allows AI agents to interact with a microservice called product service that provides the product data.
@@ -157,5 +155,31 @@ If you encounter issues:
 1. Ensure your `MICROSERVICE_URL` is correct and accessible
 2. Check Go version (should be 1.23+)
 3. Review error messages in server logs
+
+</details>
+
+## Best Practices for Natural Language Querying
+
+<details>
+<summary>Show details</summary>
+
+To smoothly query and see results in natural language, follow these steps before interacting with the MCP server:
+
+1. **Export your GCP authentication token:**
+  ```sh
+  export gcp_auth_token="YourGCPTOKEN"
+  ```
+
+2. **Set the context for your agent (e.g., GitHub Copilot agent chat):**
+  > Prompt: *Automatically generate and execute the corresponding cURL requests asynchronously in the background, actively displaying the results in plain text format, preferably structured as well-organized tables or lists for enhanced readability. No prior approval of individual cURL commands is necessary prior to execution.*
+
+By following these steps, you will receive only the relevant results in a clean, readable format, without being interrupted by underlying command details or approval prompts.
+
+3. **Use natural language commands to query the MCP server. Example commands:**
+  - show me all the available tools
+  - Show all the products
+  - List all products under Electronics category
+  - Increment the price of all the products under Electronics category by 3%
+  - Round up the price of all the products under Laptops segment to nearest 100
 
 </details>
