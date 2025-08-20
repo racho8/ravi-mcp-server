@@ -1,7 +1,5 @@
 # Team Access Setup Guide
 
-# Team Access Setup Guide
-
 ## For Team Members to Test the MCP Server
 
 <details>
