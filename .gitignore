@@ -13,6 +13,7 @@ new-key-base64.txt
 !mcp-clients/*.json
 
 # Environment Variables
+.env
 .env.local
 .env.production
 .env.development
