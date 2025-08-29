@@ -39,8 +39,11 @@ It provides tools for:
   go mod download
   ```
 3. Set environment variables:
+
+**Note**: Contact repository owner for MICROSERVICE_URL and GCP authentication token.
   ```bash
   export MICROSERVICE_URL="<your_microservice_url>"
+  export gcp_auth_token=$(gcloud auth print-identity-token)
   export PORT=8080
   ```
 4. Run the server:
@@ -92,7 +95,7 @@ Example structure:
         "-X", "POST",
         "https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp",
         "-H", "Content-Type: application/json",
-        "-H", "Authorization: Bearer GCP_AUTH_TOKEN",
+        "-H", "Authorization: Bearer {{GCP_AUTH_TOKEN}}",
         "-d", "@.vscode/payload.json"
       ]
     }
@@ -111,6 +114,11 @@ Example structure:
 - With configuration in place, you can use natural language commands in Copilot agent mode, e.g.:
   - "List all products"
   - "Create a new product called 'iPhone 15' for $999"
+  - "Update the price of product ID 123 to $899"
+  - "Delete product ID 456"
+  - "Show me the health status of the server"
+  - "Fetch all products in the 'Electronics' category"
+  - "Increase the price of all products by 5% in the 'Laptops' category"
 
 <b>4. Sample payload.json</b>
 
@@ -138,8 +146,6 @@ You can modify this file to call any tool, e.g.:
 ```
 
 <b>5. More Info</b>
-
-- See [`config/MCP_CONFIGURATION.md`](config/MCP_CONFIGURATION.md) for advanced configuration and troubleshooting.
 - For team access setup, see [`docs/TEAM_ACCESS.md`](docs/TEAM_ACCESS.md).
 
 </details>
@@ -167,7 +173,7 @@ To smoothly query and see results in natural language, follow these steps before
 
 1. **Export your GCP authentication token:**
   ```sh
-  export gcp_auth_token="YourGCPTOKEN"
+  export gcp_auth_token="YourGCPTOKEN" (Make sure you get necessary roles assigned to your token, contact repo owner if unsure)
   ```
 
 2. **Set the context for your agent (e.g., GitHub Copilot agent chat):**
