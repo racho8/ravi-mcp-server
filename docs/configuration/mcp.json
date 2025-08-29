@@ -1,0 +1,14 @@
+{
+	"servers": {
+		"ravi-mcp-server": {
+			"command": "curl",
+			"args": [
+				"-X", "POST",
+				"https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp",
+				"-H", "Content-Type: application/json",
+				"-H", "Authorization: Bearer {{gcp_auth_token}}",
+				"-d", "@.vscode/payload.json"
+			]
+		}
+	}
+}
