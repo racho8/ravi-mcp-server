@@ -24,41 +24,61 @@ It provides tools for:
 
 </details>
 
-## How to Run
+## How to Run the Remote MCP Server with GitHub Copilot Agent
 <details>
-1. **Clone the Project**  
-   
-Clone the repository and open it in VSCode.
+
+1. **Clone the repository and open it in VSCode.**
 
    ```bash
-   git clone <repository_url>
-   cd <repository_name>
-   code .
-  ```
+    git clone https://github.com/racho8/ravi-mcp-server.git
+    cd <repository_name>
+    code .
+   ```
+
 2. **Setup Configuration Files**
+
    Copy mcp.json and payload.json from docs/configuration to a new folder called .vscode in your repository.  
+     ```bash
      mkdir .vscode
      cp docs/configuration/mcp.json .vscode/
      cp docs/configuration/payload.json .vscode/
+     ```
 
-3. Start the MCP Server 
-      Start the ravi-mcp-server by running the server as described in the installation section.
+3. **Start the MCP Server**
 
-4. Export GCP Authentication Token 
+      Start the ravi-mcp-server by clicking the start button in the mcp.json file in vscode.
+
+
+4. **Export GCP Authentication Token** (Very Important, otherwise it wont' work)
+
       Run the following command to export your GCP authentication token. 
+
+    ```bash
+    export gcp_auth_token=$(gcloud auth print-identity-token)
+    ```
       Ensure your account has the Cloud Run Invoker role (contact the repository owner if unsure). 
 
-5. Test with GitHub Copilot Chat in Agent Mode 
-      Open GitHub Copilot chat in agent mode and test with the following natural language commands:
-           - show me all the available tools
-           - Show all the products
-           - List all products under Electronics category
-           - Increment the price of all the products under Electronics category by 2%
-           - Round up the price of all the products under Laptops segment to nearest 100
-        The agent should automatically generate and execute the corresponding cURL requests in the background and display the results.
 
-6. Note: If the agent asks you to run the cURL command, you can give below prompt:
+* **Test with GitHub Copilot Chat in Agent Mode**
+
+  Open GitHub Copilot chat in agent mode and test with the following natural language commands:
+
+Use the remote ravi-mcp-server endpoint in mcp.json to list all tools by sending a tools/list request.
+Then you can fire nlp querries like: 
+
+       - show me all the available tools
+       - Show all the products
+       - List all products under Electronics category
+       - Increment the price of all the products under Electronics category by 2%
+       - Round up the price of all the products under Laptops segment to nearest 100
+    
+  The agent should automatically generate and execute the corresponding cURL requests in the background and display the results.
+
+
+* Hack: If the agent asks you to run the cURL command everytime you give ask a question, you can give below prompt to bypass it:
+
    > Prompt: *Whenever I ask you about a tool in ravi-mcp-server, I want you to automatically generate and execute the corresponding cURL requests asynchronously in the background, actively displaying the results in plain text format, preferably structured as well-organized tables or lists for enhanced readability. No prior approval of individual cURL commands is necessary prior to execution.*
+
 </details>
 
 ## Installation
@@ -115,7 +135,7 @@ Clone the repository and open it in VSCode.
 
 
 
-## Using Ravi MCP Server with GitHub Copilot Agent
+## Using MCP Server with GitHub Copilot Agent
 
 <details>
 <summary>Show details</summary>
