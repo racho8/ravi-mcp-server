@@ -1,5 +1,9 @@
 {
-	"jsonrpc": "2.0",
-	"id": 1,
-	"method": "tools/list"
+  "jsonrpc": "2.0",
+  "id": 16,
+  "method": "tools/call",
+  "params": {
+    "name": "list_products",
+    "arguments": {}
+  }
 }

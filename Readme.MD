@@ -2,6 +2,10 @@
 
 A Model Context Protocol (MCP) server for product management via JSON-RPC 2.0.
 
+**API Version:** v1.0.0
+
+See [docs/api.md](docs/api.md) for a full API reference, including all methods, required parameters, and example payloads. If you change the API, increment the version and update the documentation.
+
 ## Overview
 
 This project implements a MCP wrapper server using the Model Context Protocol (MCP) that allows AI agents to interact with a microservice called product service that provides the product data.
@@ -20,7 +24,42 @@ It provides tools for:
 
 </details>
 
+## How to Run
+<details>
+1. **Clone the Project**  
+   
+Clone the repository and open it in VSCode.
 
+   ```bash
+   git clone <repository_url>
+   cd <repository_name>
+   code .
+  ```
+2. **Setup Configuration Files**
+   Copy mcp.json and payload.json from docs/configuration to a new folder called .vscode in your repository.  
+     mkdir .vscode
+     cp docs/configuration/mcp.json .vscode/
+     cp docs/configuration/payload.json .vscode/
+
+3. Start the MCP Server 
+      Start the ravi-mcp-server by running the server as described in the installation section.
+
+4. Export GCP Authentication Token 
+      Run the following command to export your GCP authentication token. 
+      Ensure your account has the Cloud Run Invoker role (contact the repository owner if unsure). 
+
+5. Test with GitHub Copilot Chat in Agent Mode 
+      Open GitHub Copilot chat in agent mode and test with the following natural language commands:
+           - show me all the available tools
+           - Show all the products
+           - List all products under Electronics category
+           - Increment the price of all the products under Electronics category by 2%
+           - Round up the price of all the products under Laptops segment to nearest 100
+        The agent should automatically generate and execute the corresponding cURL requests in the background and display the results.
+
+6. Note: If the agent asks you to run the cURL command, you can give below prompt:
+   > Prompt: *Whenever I ask you about a tool in ravi-mcp-server, I want you to automatically generate and execute the corresponding cURL requests asynchronously in the background, actively displaying the results in plain text format, preferably structured as well-organized tables or lists for enhanced readability. No prior approval of individual cURL commands is necessary prior to execution.*
+</details>
 
 ## Installation
 
@@ -173,7 +212,8 @@ To smoothly query and see results in natural language, follow these steps before
 
 1. **Export your GCP authentication token:**
   ```sh
-  export gcp_auth_token="YourGCPTOKEN" (Make sure you get necessary roles assigned to your token, contact repo owner if unsure)
+   export gcp_auth_token=$(gcloud auth print-identity-token)
+   (Make sure you get necessary roles assigned to your token, contact repo owner if unsure)
   ```
 
 2. **Set the context for your agent (e.g., GitHub Copilot agent chat):**
