@@ -97,7 +97,7 @@ func handleToolCall(w http.ResponseWriter, req JSONRPCRequest, config Config) {
 
 	log.Printf("Received tool call: %s", params.Name)
 
-	// Pass tool name and arguments only to executeToolCall
+	// pass tool name and arguments only to executeToolCall
 	args, _ := params.Arguments.(map[string]interface{})
 	result, err := executeToolCall(params.Name, args)
 	if err != nil {

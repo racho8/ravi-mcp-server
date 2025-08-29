@@ -1,8 +1,6 @@
 package main
 
-
-
-// MCP tools definition
+// MCP tools definition with expected request payloads
 var tools = []ToolSchema{
 	{
 		Name:        "welcome_message",

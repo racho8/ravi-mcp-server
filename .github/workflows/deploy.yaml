@@ -63,20 +63,20 @@ jobs:
           cd tests
           chmod +x validate_mcp.sh
           echo "🔍 Running MCP Protocol Validation..."
-          ./validate_mcp.sh || (echo "❌ MCP Protocol validation failed" && exit 1)
+          ./validate_mcp.sh || (echo "MCP Protocol validation failed" && exit 1)
 
       - name: Run comprehensive tests
         run: |
           cd tests
           chmod +x run_tests.sh
           echo "🧪 Running Comprehensive Test Suite..."
-          ./run_tests.sh || (echo "❌ Comprehensive tests failed" && exit 1)
+          ./run_tests.sh || (echo "Comprehensive tests failed" && exit 1)
 
       - name: Test Summary
         if: always()
         run: |
-          echo "✅ All tests completed!"
-          echo "🚀 Ready for deployment"
+          echo "All tests completed!"
+          echo "Ready for deployment"
 
       - name: Stop server
         if: always()

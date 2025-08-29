@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// Utility functions for MCP server
+// utility functions for MCP server
 func sendJSONRPCResponse(w http.ResponseWriter, id interface{}, result interface{}) {
 	response := JSONRPCResponse{
 		JSONRPC: "2.0",

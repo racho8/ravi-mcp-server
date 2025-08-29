@@ -20,7 +20,7 @@ func TestConfig(t *testing.T) {
 }
 
 func TestToolsAvailable(t *testing.T) {
-	// Updated to match latest tools in main.go
+	// updated to match latest tools in main.go
 	expectedTools := []string{
 		"welcome_message",
 		"health_check",
@@ -46,7 +46,7 @@ func TestToolsAvailable(t *testing.T) {
 }
 
 func TestJSONRPCStructs(t *testing.T) {
-	// Test JSONRPCRequest
+	// test JSONRPCRequest
 	req := JSONRPCRequest{
 		JSONRPC: "2.0",
 		ID:      1,
@@ -57,7 +57,7 @@ func TestJSONRPCStructs(t *testing.T) {
 		t.Errorf("Expected JSONRPC to be '2.0', got '%s'", req.JSONRPC)
 	}
 
-	// Test JSONRPCResponse
+	// test JSONRPCResponse
 	resp := JSONRPCResponse{
 		JSONRPC: "2.0",
 		ID:      1,

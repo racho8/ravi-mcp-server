@@ -8,10 +8,10 @@ import (
 	"net/http"
 )
 
+// TODO: read it from environment variable MICROSERVICE_URL
 const productServiceBaseURL = "https://product-service-256110662801.europe-west3.run.app"
 
-
-// Business logic functions for MCP server
+// business logic functions for MCP server
 func executeToolCall(toolName string, params map[string]interface{}) (interface{}, error) {
 	switch toolName {
 	case "welcome_message":
@@ -39,8 +39,7 @@ func executeToolCall(toolName string, params map[string]interface{}) (interface{
 	}
 }
 
-// Example business logic implementations
-
+// business logic implementations
 func deleteProducts(params map[string]interface{}) (interface{}, error) {
 	url := productServiceBaseURL + "/products/delete"
 	return invokeMicroservice("POST", url, params)
@@ -92,8 +91,7 @@ func updateProducts(params map[string]interface{}) (interface{}, error) {
 	return invokeMicroservice("POST", url, params)
 }
 
-
-// Helper to make HTTP requests to microservice and parse response
+// helper to make HTTP requests to microservice and parse response
 func invokeMicroservice(method, url string, params map[string]interface{}) (interface{}, error) {
 	var reqBody *bytes.Buffer
 	if params != nil {

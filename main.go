@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -10,9 +9,9 @@ import (
 func main() {
 	microserviceURL := os.Getenv("MICROSERVICE_URL")
 	if microserviceURL != "" {
-		log.Printf("MICROSERVICE_URL: configured ✓")
+		log.Printf("MICROSERVICE_URL: configured")
 	} else {
-		log.Printf("MICROSERVICE_URL: not configured ⚠️")
+		log.Printf("MICROSERVICE_URL: not configured!!")
 	}
 	log.Printf("PORT: %s", os.Getenv("PORT"))
 
@@ -25,6 +24,8 @@ func main() {
 	}
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+
+		// needed for CORS support, especially for web-based clients
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -37,6 +38,8 @@ func main() {
 		w.Write([]byte(`{"status": "healthy", "service": "ravi-mcp-server"}`))
 	})
 	http.HandleFunc("/mcp", func(w http.ResponseWriter, r *http.Request) {
+
+		// needed for CORS support, especially for web-based clients
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")

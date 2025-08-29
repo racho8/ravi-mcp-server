@@ -1,6 +1,8 @@
 package main
 
-// All struct definitions for MCP server
+// data models or struct definitions for the MCP server
+
+// JSONRPCRequest and JSONRPCResponse structures
 type JSONRPCRequest struct {
 	JSONRPC string      `json:"jsonrpc"`
 	ID      interface{} `json:"id"`
@@ -9,9 +11,9 @@ type JSONRPCRequest struct {
 }
 
 type JSONRPCResponse struct {
-	JSONRPC string      `json:"jsonrpc"`
-	ID      interface{} `json:"id"`
-	Result  interface{} `json:"result,omitempty"`
+	JSONRPC string        `json:"jsonrpc"`
+	ID      interface{}   `json:"id"`
+	Result  interface{}   `json:"result,omitempty"`
 	Error   *JSONRPCError `json:"error,omitempty"`
 }
 
@@ -39,9 +41,9 @@ type ClientInfo struct {
 }
 
 type InitializeResult struct {
-	ProtocolVersion string         `json:"protocolVersion"`
+	ProtocolVersion string             `json:"protocolVersion"`
 	Capabilities    ServerCapabilities `json:"capabilities"`
-	ServerInfo      ServerInfo     `json:"serverInfo"`
+	ServerInfo      ServerInfo         `json:"serverInfo"`
 }
 
 type ServerCapabilities struct {
@@ -60,16 +62,6 @@ type ToolsListResult struct {
 type ToolCallParams struct {
 	Name      string      `json:"name"`
 	Arguments interface{} `json:"arguments,omitempty"`
-}
-
-type ToolCallResult struct {
-	Content []ToolContent `json:"content"`
-}
-
-type ToolContent struct {
-	Type string      `json:"type"`
-	Text string      `json:"text,omitempty"`
-	Data interface{} `json:"data,omitempty"`
 }
 
 type Config struct {
