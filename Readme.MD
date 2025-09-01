@@ -1,6 +1,10 @@
 # Ravi MCP Server
 
-A Model Context Protocol (MCP) server for product management via JSON-RPC 2.0.
+This project is a simple example of a Model Context Protocol (MCP) server for product management. 
+It lets you use easy, standard requests (JSON-RPC 2.0) to list, add, update, or delete products. 
+
+The server connects AI agents or other programs to a product microservice, making it easier to manage product data automatically or through natural language commands. 
+This proof-of-concept shows how MCP can help organize and automate product management tasks.
 
 **API Version:** v1.0.0
 
@@ -17,12 +21,10 @@ It provides tools for:
 - Bulk product operations
 - Health check and welcome message
 
-<details>
 <summary>Architecture Diagram</summary>
 
 ![Architecture Diagram](docs/architecture-diagram.svg)
 
-</details>
 
 ## How to Run the Remote MCP Server with GitHub Copilot Agent
 <details>
@@ -47,16 +49,18 @@ It provides tools for:
 3. **Start the MCP Server**
 
       Start the ravi-mcp-server by clicking the start button in the mcp.json file in vscode.
+      
+      **Note**: Sometime, it might show as Error next to the server, but it still works.
 
 
-4. **Export GCP Authentication Token** (Very Important, otherwise it wont' work)
+4. **Export GCP Authentication Token** (Very Important, otherwise it won't work)
 
       Run the following command to export your GCP authentication token. 
 
     ```bash
     export gcp_auth_token=$(gcloud auth print-identity-token)
     ```
-      Ensure your account has the Cloud Run Invoker role (contact the repository owner if unsure). 
+      **Note**: Ensure your account has the Cloud Run Invoker role (contact the repository owner if unsure). 
 
 
 * **Test with GitHub Copilot Chat in Agent Mode**
@@ -134,89 +138,12 @@ Then you can fire nlp querries like:
 - `health_check` — Check server status
 - `welcome_message` — Get welcome message
 
-
-
-## Using MCP Server with GitHub Copilot Agent
-
-<details>
-<summary>Show details</summary>
-
-To use this remote MCP server with GitHub Copilot agent mode (or any MCP-compatible client):
-
-<b>1. Add <code>mcp.json</code> to your workspace (recommended location: <code>.vscode/mcp.json</code>)</b>
-
-Example structure:
-```json
-{
-  "servers": {
-    "ravi-mcp-server": {
-      "command": "curl",
-      "args": [
-        "-X", "POST",
-        "https://ravi-mcp-server-256110662801.europe-west3.run.app/mcp",
-        "-H", "Content-Type: application/json",
-        "-H", "Authorization: Bearer {{GCP_AUTH_TOKEN}}",
-        "-d", "@.vscode/payload.json"
-      ]
-    }
-  }
-}
-```
-
-<b>2. Authentication Token</b>
-
-- You must provide a valid Google Cloud Bearer token for authentication.
-- Recommended: Use `gcloud auth print-identity-token` to generate a token.
-- Set the token in your environment or update the `mcp.json` as needed.
-
-<b>3. Example Usage</b>
-
-- With configuration in place, you can use natural language commands in Copilot agent mode, e.g.:
-  - "List all products"
-  - "Create a new product called 'iPhone 15' for $999"
-  - "Update the price of product ID 123 to $899"
-  - "Delete product ID 456"
-  - "Show me the health status of the server"
-  - "Fetch all products in the 'Electronics' category"
-  - "Increase the price of all products by 5% in the 'Laptops' category"
-
-<b>4. Sample payload.json</b>
-
-Your `.vscode/payload.json` file is referenced in `mcp.json` and should contain a valid MCP JSON-RPC request. Example:
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "method": "tools/list"
-}
-```
-
-You can modify this file to call any tool, e.g.:
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 2,
-  "method": "tools/call",
-  "params": {
-    "name": "list_products"
-  }
-}
-```
-
-<b>5. More Info</b>
-- For team access setup, see [`docs/TEAM_ACCESS.md`](docs/TEAM_ACCESS.md).
-
-</details>
-
-
 ## Troubleshooting
 
 <details>
 <summary>Show details</summary>
 
-If you encounter issues:
+If you encounter issues while running the mcp server in local:
 
 1. Ensure your `MICROSERVICE_URL` is correct and accessible
 2. Check Go version (should be 1.23+)
