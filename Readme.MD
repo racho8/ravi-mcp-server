@@ -75,9 +75,10 @@ Then you can fire nlp querries like:
   The agent should automatically generate and execute the corresponding cURL requests in the background and display the results.
 
 
-* Hack: If the agent asks you to run the cURL command everytime you give ask a question, you can give below prompt to bypass it:
+* Hack(Optional): If the agent asks you to run the cURL command everytime you give ask a question, you can give below prompt to bypass it:
 
-   > Prompt: *Whenever I ask you about a tool in ravi-mcp-server, I want you to automatically generate and execute the corresponding cURL requests asynchronously in the background, actively displaying the results in plain text format, preferably structured as well-organized tables or lists for enhanced readability. No prior approval of individual cURL commands is necessary prior to execution.*
+
+   > Prompt: *Automatically generate and execute the required cURL requests in the background for any command I provide related to ravi-mcp-server. Display the results directly in plain text format, structured as well-organized tables or lists for better readability. Do not ask for approval before executing each and every cURL command.*
 
 </details>
 

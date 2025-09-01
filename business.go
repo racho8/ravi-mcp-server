@@ -76,6 +76,7 @@ func deleteProduct(params map[string]interface{}) (interface{}, error) {
 	return invokeMicroservice("DELETE", url, nil)
 }
 
+// TODO: add pagination support and use params to filter results
 func listProducts(params map[string]interface{}) (interface{}, error) {
 	url := productServiceBaseURL + "/products"
 	return invokeMicroservice("GET", url, nil)
