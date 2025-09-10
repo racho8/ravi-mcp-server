@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"encoding/json"
 )
 
 func main() {
@@ -48,6 +49,24 @@ func main() {
 			return
 		}
 		mcpHandler(config)(w, r)
+	})
+	http.HandleFunc("/mcp/discover", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		// Import encoding/json and tools from tools.go
+		if err := json.NewEncoder(w).Encode(tools); err != nil {
+			http.Error(w, "Failed to encode tools", http.StatusInternalServerError)
+		}
 	})
 
 	log.Printf("Starting MCP server on port %s", config.Port)
