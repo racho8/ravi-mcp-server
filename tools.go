@@ -9,6 +9,16 @@ var tools = []ToolSchema{
 			"type":       "object",
 			"properties": map[string]interface{}{},
 		},
+		Schema: map[string]interface{}{},
+		SampleRequest: map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id": "<id>",
+			"method": "tools/call",
+			"params": map[string]interface{}{
+				"name": "welcome_message",
+				"arguments": map[string]interface{}{},
+			},
+		},
 	},
 	{
 		Name:        "health_check",
@@ -16,6 +26,16 @@ var tools = []ToolSchema{
 		InputSchema: map[string]interface{}{
 			"type":       "object",
 			"properties": map[string]interface{}{},
+		},
+		Schema: map[string]interface{}{},
+		SampleRequest: map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id": "<id>",
+			"method": "tools/call",
+			"params": map[string]interface{}{
+				"name": "health_check",
+				"arguments": map[string]interface{}{},
+			},
 		},
 	},
 	{
@@ -31,6 +51,26 @@ var tools = []ToolSchema{
 			},
 			"required": []string{"name", "category", "price"},
 		},
+		Schema: map[string]interface{}{
+			"name":     "string",
+			"category": "string",
+			"segment":  "string",
+			"price":    "number",
+		},
+		SampleRequest: map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id": "<id>",
+			"method": "tools/call",
+			"params": map[string]interface{}{
+				"name": "create_product",
+				"arguments": map[string]interface{}{
+					"name": "<product name>",
+					"category": "<category name>",
+					"segment": "<segment name>",
+					"price": "<price>",
+				},
+			},
+		},
 	},
 	{
 		Name:        "get_product",
@@ -41,6 +81,20 @@ var tools = []ToolSchema{
 				"id": map[string]string{"type": "string"},
 			},
 			"required": []string{"id"},
+		},
+		Schema: map[string]interface{}{
+			"id": "string",
+		},
+		SampleRequest: map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id": "<id>",
+			"method": "tools/call",
+			"params": map[string]interface{}{
+				"name": "get_product",
+				"arguments": map[string]interface{}{
+					"id": "12345",
+				},
+			},
 		},
 	},
 	{
@@ -55,6 +109,25 @@ var tools = []ToolSchema{
 			},
 			"required": []string{"id"},
 		},
+		Schema: map[string]interface{}{
+			"id": "string",
+			"name": "string",
+			"price": "number",
+		},
+		SampleRequest: map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id": "<id>",
+			"method": "tools/call",
+			"params": map[string]interface{}{
+				"name": "update_product",
+				"arguments": map[string]interface{}{
+					"id": "12345",
+					"name": "Laptop5",
+					"category": "<category name>",
+					"price": 1099,
+				},
+			},
+		},
 	},
 	{
 		Name:        "delete_product",
@@ -66,6 +139,20 @@ var tools = []ToolSchema{
 			},
 			"required": []string{"id"},
 		},
+		Schema: map[string]interface{}{
+			"id": "string",
+		},
+		SampleRequest: map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id": "<id>",
+			"method": "tools/call",
+			"params": map[string]interface{}{
+				"name": "delete_product",
+				"arguments": map[string]interface{}{
+					"id": "12345",
+				},
+			},
+		},
 	},
 	{
 		Name:        "list_products",
@@ -73,6 +160,16 @@ var tools = []ToolSchema{
 		InputSchema: map[string]interface{}{
 			"type":       "object",
 			"properties": map[string]interface{}{},
+		},
+		Schema: map[string]interface{}{},
+		SampleRequest: map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id": "<id>",
+			"method": "tools/call",
+			"params": map[string]interface{}{
+				"name": "list_products",
+				"arguments": map[string]interface{}{},
+			},
 		},
 	},
 	{
@@ -85,6 +182,33 @@ var tools = []ToolSchema{
 			},
 			"required": []string{"products"},
 		},
+		Schema: map[string]interface{}{
+			"products": "array of product objects",
+		},
+		SampleRequest: map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id": "<id>",
+			"method": "tools/call",
+			"params": map[string]interface{}{
+				"name": "create_multiple_products",
+				"arguments": map[string]interface{}{
+					"products": []map[string]interface{}{
+						{
+							"name": "<product name>",
+							"category": "<category name>",
+							"segment": "<segment>",
+							"price": "<price>",
+						},
+						{
+							"name": "<product name>",
+							"category": "<category name>",
+							"segment": "<segment>",
+							"price": "<price>",
+						},
+					},
+				},
+			},
+		},
 	},
 	{
 		Name:        "update_products",
@@ -96,6 +220,33 @@ var tools = []ToolSchema{
 			},
 			"required": []string{"products"},
 		},
+		Schema: map[string]interface{}{
+			"products": "array of product update objects",
+		},
+		SampleRequest: map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id": "<id>",
+			"method": "tools/call",
+			"params": map[string]interface{}{
+				"name": "update_products",
+				"arguments": map[string]interface{}{
+					"products": []map[string]interface{}{
+						{
+							"id": "<product id>",
+							"category": "<category name>",
+							"segment": "<segment>",
+							"price": "<price>",
+						},
+						{
+							"id": "<product id>",
+							"category": "<category name>",
+							"segment": "<segment>",
+							"price": "<price>",
+						},
+					},
+				},
+			},
+		},
 	},
 	{
 		Name:        "delete_products",
@@ -106,6 +257,20 @@ var tools = []ToolSchema{
 				"ids": map[string]interface{}{"type": "array"},
 			},
 			"required": []string{"ids"},
+		},
+		Schema: map[string]interface{}{
+			"ids": "array of product ids",
+		},
+		SampleRequest: map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id": "<id>",
+			"method": "tools/call",
+			"params": map[string]interface{}{
+				"name": "delete_products",
+				"arguments": map[string]interface{}{
+					"ids": []string{"<product id 1>", "<product id 2>"},
+				},
+			},
 		},
 	},
 }

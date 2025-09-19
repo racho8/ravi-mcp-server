@@ -74,12 +74,13 @@ func handleInitialize(w http.ResponseWriter, req JSONRPCRequest) {
 }
 
 func handleToolsList(w http.ResponseWriter, req JSONRPCRequest) {
-	result := ToolsListResult{
-		Tools: tools,
+	// Build tool schemas only
+	result := map[string]interface{}{
+		"tools": tools,
 	}
 
 	sendJSONRPCResponse(w, req.ID, result)
-	log.Println("Sent tools list to client.")
+	log.Println("Sent tools list with schemas to client.")
 }
 
 func handleToolCall(w http.ResponseWriter, req JSONRPCRequest, config Config) {

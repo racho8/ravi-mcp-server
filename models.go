@@ -24,9 +24,11 @@ type JSONRPCError struct {
 }
 
 type ToolSchema struct {
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	InputSchema interface{} `json:"inputSchema"`
+	Name          string      `json:"name"`
+	Description   string      `json:"description"`
+	InputSchema   interface{} `json:"inputSchema"`
+	Schema        interface{} `json:"schema,omitempty"`
+	SampleRequest interface{} `json:"sampleRequest,omitempty"`
 }
 
 type InitializeParams struct {
