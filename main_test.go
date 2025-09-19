@@ -20,7 +20,7 @@ func TestConfig(t *testing.T) {
 }
 
 func TestToolsAvailable(t *testing.T) {
-	// updated to match latest tools in main.go
+	// updated to match latest tools in tools.go
 	expectedTools := []string{
 		"welcome_message",
 		"health_check",
@@ -32,6 +32,9 @@ func TestToolsAvailable(t *testing.T) {
 		"create_multiple_products",
 		"update_products",
 		"delete_products",
+		"get_products_by_category",
+		"get_products_by_segment",
+		"get_product_by_name",
 	}
 
 	if len(tools) != len(expectedTools) {

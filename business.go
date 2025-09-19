@@ -22,21 +22,80 @@ func executeToolCall(toolName string, params map[string]interface{}) (interface{
 		return createProduct(params)
 	case "get_product":
 		return getProduct(params)
-	case "update_product":
-		return updateProduct(params)
-	case "delete_product":
-		return deleteProduct(params)
-	case "list_products":
-		return listProducts(params)
-	case "create_multiple_products":
-		return createMultipleProducts(params)
-	case "update_products":
-		return updateProducts(params)
-	case "delete_products":
-		return deleteProducts(params)
-	default:
-		return nil, fmt.Errorf("unknown tool: %s", toolName)
+	case "get_products_by_category":
+		return getProductsByCategory(params)
+	case "get_products_by_segment":
+		return getProductsBySegment(params)
+	case "get_product_by_name":
+		return getProductByName(params)
 	}
+	return nil, fmt.Errorf("unknown tool: %s", toolName)
+}
+
+// Returns all products matching a given category
+func getProductsByCategory(params map[string]interface{}) (interface{}, error) {
+	category, ok := params["category"].(string)
+	if !ok || category == "" {
+		return nil, fmt.Errorf("missing or invalid 'category' argument")
+	}
+	url := productServiceBaseURL + "/products/category/" + category
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("product service returned status %d", resp.StatusCode)
+	}
+	var products []map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&products); err != nil {
+		return nil, err
+	}
+	return products, nil
+}
+
+// Returns all products matching a given segment
+func getProductsBySegment(params map[string]interface{}) (interface{}, error) {
+	segment, ok := params["segment"].(string)
+	if !ok || segment == "" {
+		return nil, fmt.Errorf("missing or invalid 'segment' argument")
+	}
+	url := productServiceBaseURL + "/products/segment/" + segment
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("product service returned status %d", resp.StatusCode)
+	}
+	var products []map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&products); err != nil {
+		return nil, err
+	}
+	return products, nil
+}
+
+// Returns all products matching a given name
+func getProductByName(params map[string]interface{}) (interface{}, error) {
+	name, ok := params["name"].(string)
+	if !ok || name == "" {
+		return nil, fmt.Errorf("missing or invalid 'name' argument")
+	}
+	url := productServiceBaseURL + "/products/" + name
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("product service returned status %d", resp.StatusCode)
+	}
+	var products []map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&products); err != nil {
+		return nil, err
+	}
+	return products, nil
 }
 
 // business logic implementations

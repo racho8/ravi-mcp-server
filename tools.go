@@ -273,4 +273,79 @@ var tools = []ToolSchema{
 			},
 		},
 	},
+	{
+		Name:        "get_products_by_category",
+		Description: "Retrieve all products matching a given category",
+		InputSchema: map[string]interface{}{
+			"type": "object",
+			"properties": map[string]interface{}{
+				"category": map[string]string{"type": "string"},
+			},
+			"required": []string{"category"},
+		},
+		Schema: map[string]interface{}{
+			"category": "string",
+		},
+		SampleRequest: map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id": "<id>",
+			"method": "tools/call",
+			"params": map[string]interface{}{
+				"name": "get_products_by_category",
+				"arguments": map[string]interface{}{
+					"category": "<category name>",
+				},
+			},
+		},
+	},
+	{
+		Name:        "get_products_by_segment",
+		Description: "Retrieve all products matching a given segment",
+		InputSchema: map[string]interface{}{
+			"type": "object",
+			"properties": map[string]interface{}{
+				"segment": map[string]string{"type": "string"},
+			},
+			"required": []string{"segment"},
+		},
+		Schema: map[string]interface{}{
+			"segment": "string",
+		},
+		SampleRequest: map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id": "<id>",
+			"method": "tools/call",
+			"params": map[string]interface{}{
+				"name": "get_products_by_segment",
+				"arguments": map[string]interface{}{
+					"segment": "<segment name>",
+				},
+			},
+		},
+	},
+	{
+		Name:        "get_product_by_name",
+		Description: "Retrieve all products matching a given name",
+		InputSchema: map[string]interface{}{
+			"type": "object",
+			"properties": map[string]interface{}{
+				"name": map[string]string{"type": "string"},
+			},
+			"required": []string{"name"},
+		},
+		Schema: map[string]interface{}{
+			"name": "string",
+		},
+		SampleRequest: map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id": "<id>",
+			"method": "tools/call",
+			"params": map[string]interface{}{
+				"name": "get_product_by_name",
+				"arguments": map[string]interface{}{
+					"name": "<product name>",
+				},
+			},
+		},
+	},
 }
