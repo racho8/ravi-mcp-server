@@ -28,8 +28,38 @@ func executeToolCall(toolName string, params map[string]interface{}) (interface{
 		return getProductsBySegment(params)
 	case "get_product_by_name":
 		return getProductByName(params)
+	case "list_products":
+		return listProducts(params)
+	case "create_multiple_products":
+		return createMultipleProducts(params)
+	case "update_product":
+		return updateProduct(params)
+	case "update_products":
+		return updateProducts(params)
+	case "delete_product":
+		return deleteProduct(params)
+	case "delete_products":
+		return deleteProducts(params)
 	}
 	return nil, fmt.Errorf("unknown tool: %s", toolName)
+}
+
+// Returns all products in the store
+func listProducts(params map[string]interface{}) (interface{}, error) {
+	url := productServiceBaseURL + "/products"
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("product service returned status %d", resp.StatusCode)
+	}
+	var products []map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&products); err != nil {
+		return nil, err
+	}
+	return products, nil
 }
 
 // Returns all products matching a given category
@@ -122,8 +152,20 @@ func updateProduct(params map[string]interface{}) (interface{}, error) {
 	if !ok || id == "" {
 		return nil, fmt.Errorf("missing or invalid product id")
 	}
+	// Only include fields that are present in params
+	updateFields := make(map[string]interface{})
+	updateFields["id"] = id
+	if name, ok := params["name"].(string); ok && name != "" {
+		updateFields["name"] = name
+	}
+	if price, ok := params["price"].(float64); ok {
+		updateFields["price"] = price
+	}
+	if category, ok := params["category"].(string); ok && category != "" {
+		updateFields["category"] = category
+	}
 	url := fmt.Sprintf(productServiceBaseURL+"/products/%s", id)
-	return invokeMicroservice("PUT", url, params)
+	return invokeMicroservice("PUT", url, updateFields)
 }
 
 func deleteProduct(params map[string]interface{}) (interface{}, error) {
@@ -136,10 +178,6 @@ func deleteProduct(params map[string]interface{}) (interface{}, error) {
 }
 
 // TODO: add pagination support and use params to filter results
-func listProducts(params map[string]interface{}) (interface{}, error) {
-	url := productServiceBaseURL + "/products"
-	return invokeMicroservice("GET", url, nil)
-}
 
 func createMultipleProducts(params map[string]interface{}) (interface{}, error) {
 	url := productServiceBaseURL + "/products/create-multiple"

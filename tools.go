@@ -106,6 +106,7 @@ var tools = []ToolSchema{
 				"id":    map[string]string{"type": "string"},
 				"name":  map[string]string{"type": "string"},
 				"price": map[string]string{"type": "number"},
+				"category": map[string]string{"type": "string"},
 			},
 			"required": []string{"id"},
 		},
@@ -113,6 +114,7 @@ var tools = []ToolSchema{
 			"id": "string",
 			"name": "string",
 			"price": "number",
+			"category": "string",
 		},
 		SampleRequest: map[string]interface{}{
 			"jsonrpc": "2.0",
