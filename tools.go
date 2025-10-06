@@ -1,3 +1,46 @@
+// Package main - tools.go
+//
+// This file defines all available MCP tools and their schemas for the product management service.
+//
+// Key Responsibilities:
+//   - Define the global 'tools' array with complete metadata for each tool
+//   - Specify input schemas for parameter validation
+//   - Provide sample requests for documentation and testing
+//   - Describe tool capabilities and requirements
+//
+// Tool Categories:
+//   1. Service Health Tools:
+//      - welcome_message: Get welcome message
+//      - health_check: Check service health
+//
+//   2. Single Product Operations:
+//      - create_product: Create a new product
+//      - get_product: Retrieve product by ID
+//      - update_product: Update existing product
+//      - delete_product: Delete product by ID
+//      - list_products: List all products
+//
+//   3. Batch Operations:
+//      - create_multiple_products: Batch create products
+//      - update_products: Batch update products
+//      - delete_products: Batch delete products
+//
+//   4. Query/Filter Operations:
+//      - get_products_by_category: Filter by category
+//      - get_products_by_segment: Filter by segment
+//      - get_product_by_name: Search by name
+//
+// Tool Schema Structure:
+//   - Name: Unique identifier for the tool
+//   - Description: Human-readable description of tool functionality
+//   - InputSchema: JSON schema for parameter validation (JSON Schema format)
+//   - Schema: Simplified schema representation
+//   - SampleRequest: Example JSON-RPC request with sample parameters
+//
+// This tools array is referenced by:
+//   - handleToolsList() in handlers.go (returns tools to clients)
+//   - /mcp/discover endpoint in main.go (REST discovery)
+//   - executeToolCall() in business.go (validates tool existence)
 package main
 
 // MCP tools definition with expected request payloads

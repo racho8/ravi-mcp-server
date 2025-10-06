@@ -1,3 +1,51 @@
+// Package main - business.go
+//
+// This file contains all business logic for executing MCP tools and communicating with the
+// backend product service microservice.
+//
+// Key Responsibilities:
+//   - Route tool calls to appropriate business logic functions
+//   - Validate tool parameters and inputs
+//   - Make HTTP requests to backend product service
+//   - Transform and return results to the MCP handler
+//   - Handle errors from the backend service
+//
+// Tool Execution Flow:
+//   1. executeToolCall() receives tool name and parameters
+//   2. Routes to specific tool function based on tool name
+//   3. Tool function validates parameters and constructs HTTP request
+//   4. invokeMicroservice() makes the actual HTTP call
+//   5. Response is parsed and returned to handler
+//
+// Tool Functions:
+//
+//   Service Tools:
+//     - welcome_message: Returns static welcome message
+//     - health_check: Returns static health status
+//
+//   Single Product Operations:
+//     - createProduct: POST /products
+//     - getProduct: GET /products/{id}
+//     - updateProduct: PUT /products/{id}
+//     - deleteProduct: DELETE /products/{id}
+//     - listProducts: GET /products
+//
+//   Batch Operations:
+//     - createMultipleProducts: POST /products/create-multiple
+//     - updateProducts: POST /products/update
+//     - deleteProducts: POST /products/delete
+//
+//   Query Operations:
+//     - getProductsByCategory: GET /products/category/{category}
+//     - getProductsBySegment: GET /products/segment/{segment}
+//     - getProductByName: GET /products/{name}
+//
+// Helper Functions:
+//   - invokeMicroservice: Generic HTTP client for backend service calls
+//
+// Backend Service:
+//   - Base URL: https://product-service-256110662801.europe-west3.run.app
+//   - TODO: Read from MICROSERVICE_URL environment variable
 package main
 
 import (

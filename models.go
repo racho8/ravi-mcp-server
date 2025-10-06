@@ -1,3 +1,42 @@
+// Package main - models.go
+//
+// This file defines all data structures and models used throughout the MCP server.
+//
+// Key Responsibilities:
+//   - Define JSON-RPC 2.0 protocol structures (request, response, error)
+//   - Define MCP-specific structures (tool schemas, initialization, capabilities)
+//   - Define server configuration structures
+//   - Provide Go struct tags for JSON marshaling/unmarshaling
+//
+// Structure Categories:
+//
+//   1. JSON-RPC 2.0 Protocol:
+//      - JSONRPCRequest: Standard JSON-RPC request format
+//      - JSONRPCResponse: Standard JSON-RPC response format
+//      - JSONRPCError: Standard error structure with code, message, and data
+//
+//   2. MCP Protocol Structures:
+//      - InitializeParams: Client initialization parameters
+//      - InitializeResult: Server initialization response with capabilities
+//      - ToolSchema: Complete tool definition with schema and metadata
+//      - ToolCallParams: Parameters for executing a tool
+//
+//   3. Capability Structures:
+//      - ServerCapabilities: Advertised server capabilities
+//      - ClientInfo: Client identification information
+//      - ServerInfo: Server identification information
+//
+//   4. Configuration:
+//      - Config: Server configuration (microservice URL, port)
+//
+// JSON Tags:
+//   - All structs include `json` tags for proper serialization
+//   - Optional fields marked with `omitempty`
+//
+// Usage:
+//   - handlers.go: Unmarshals requests and marshals responses
+//   - utils.go: Uses response structures for formatting
+//   - main.go: Uses Config for server initialization
 package main
 
 // data models or struct definitions for the MCP server

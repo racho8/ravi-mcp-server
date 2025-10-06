@@ -1,3 +1,32 @@
+// Package main - handlers.go
+//
+// This file contains all HTTP request handlers for the MCP server's JSON-RPC 2.0 protocol.
+//
+// Key Responsibilities:
+//   - Request validation and parsing (HTTP method, JSON-RPC format, protocol version)
+//   - Routing JSON-RPC method calls to appropriate handlers
+//   - Error handling with proper JSON-RPC error codes
+//   - Response formatting and transmission
+//
+// Handler Functions:
+//   - mcpHandler: Main entry point that validates and routes all JSON-RPC requests
+//   - handleInitialize: Handles 'initialize' method for protocol handshake
+//   - handleToolsList: Handles 'tools/list' method to return available tools
+//   - handleToolCall: Handles 'tools/call' method to execute specific tools
+//
+// JSON-RPC Error Codes:
+//   - -32700: Parse error (invalid JSON or request body read failure)
+//   - -32600: Invalid Request (wrong JSON-RPC version)
+//   - -32601: Method not found (unknown JSON-RPC method)
+//   - -32602: Invalid params (missing or malformed parameters)
+//   - -32603: Internal error (tool execution failure)
+//
+// Flow:
+//   1. Validate HTTP method (POST only)
+//   2. Read and parse request body
+//   3. Validate JSON-RPC 2.0 format
+//   4. Route to method-specific handler
+//   5. Send formatted response or error
 package main
 
 import (

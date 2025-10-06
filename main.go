@@ -1,3 +1,25 @@
+// Package main implements an MCP (Model Context Protocol) server that exposes product management
+// tools via JSON-RPC 2.0 protocol.
+//
+// This file serves as the entry point for the MCP server and is responsible for:
+//   - Initializing the HTTP server on a configurable port (default: 8080)
+//   - Setting up route handlers for MCP protocol endpoints
+//   - Configuring CORS headers for cross-origin requests
+//   - Reading environment configuration (MICROSERVICE_URL, PORT)
+//
+// Available endpoints:
+//   - POST /mcp           - Main JSON-RPC 2.0 endpoint for MCP protocol (initialize, tools/list, tools/call)
+//   - GET  /mcp/discover  - REST endpoint for discovering available tools (returns tools array)
+//   - GET  /health        - Health check endpoint
+//
+// Environment Variables:
+//   - MICROSERVICE_URL: URL of the backend product service (optional)
+//   - PORT: Server port (default: 8080)
+//
+// The server supports the following JSON-RPC 2.0 methods:
+//   - initialize: Handshake and capability negotiation
+//   - tools/list: Returns list of all available tools with schemas
+//   - tools/call: Executes a specific tool with provided arguments
 package main
 
 import (
