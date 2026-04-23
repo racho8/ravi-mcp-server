@@ -47,7 +47,7 @@ package main
 var tools = []ToolSchema{
 	{
 		Name:        "welcome_message",
-		Description: "Get the welcome message from the product service",
+		Description: "Use this tool to get a welcome greeting from the product management service. Useful for verifying the server is reachable. Takes no arguments.",
 		InputSchema: map[string]interface{}{
 			"type":       "object",
 			"properties": map[string]interface{}{},
@@ -65,7 +65,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "health_check",
-		Description: "Check the health of the product service",
+		Description: "Use this tool to check the health and availability of the product service. Returns the current service status. Call this before other operations to confirm the backend is operational. Takes no arguments.",
 		InputSchema: map[string]interface{}{
 			"type":       "object",
 			"properties": map[string]interface{}{},
@@ -83,7 +83,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "create_product",
-		Description: "Create a new product in the store",
+		Description: "Use this tool to create a single new product in the catalog. Requires name, category, and price. Optionally accepts a segment. Returns the created product with its generated ID.",
 		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
@@ -117,7 +117,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "get_product",
-		Description: "Retrieve a product by ID",
+		Description: "Use this tool to retrieve a single product by its unique ID. Returns full product details including name, category, segment, and price.",
 		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
@@ -142,7 +142,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "update_product",
-		Description: "Update an existing product by ID",
+		Description: "Use this tool to update a single existing product by its ID. Only the provided fields (name, price, category) are modified; omitted fields remain unchanged. ID is required, all other fields are optional.",
 		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
@@ -176,7 +176,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "delete_product",
-		Description: "Delete a product by ID",
+		Description: "Use this tool to permanently delete a single product from the catalog by its ID. This action cannot be undone.",
 		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
@@ -201,7 +201,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "list_products",
-		Description: "List all products in the store",
+		Description: "Use this tool to list all products in the catalog. Returns an array of every product with full details (ID, name, category, segment, price). Takes no arguments.",
 		InputSchema: map[string]interface{}{
 			"type":       "object",
 			"properties": map[string]interface{}{},
@@ -219,7 +219,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "create_multiple_products",
-		Description: "Create multiple products in the store",
+		Description: "Use this tool to create multiple products in a single batch operation. Accepts an array of product objects, each with name, category, segment, and price. Prefer this over repeated create_product calls.",
 		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
@@ -257,7 +257,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "update_products",
-		Description: "Update multiple products at once",
+		Description: "Use this tool to update multiple products in a single batch operation. Accepts an array of product objects, each identified by its ID with the fields to update. Prefer this over repeated update_product calls.",
 		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
@@ -295,7 +295,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "delete_products",
-		Description: "Delete multiple products at once",
+		Description: "Use this tool to permanently delete multiple products in a single batch operation. Accepts an array of product IDs. This action cannot be undone. Prefer this over repeated delete_product calls.",
 		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
@@ -320,7 +320,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "get_products_by_category",
-		Description: "Retrieve all products matching a given category",
+		Description: "Use this tool to filter products by category (e.g., Electronics, Clothing, Food). Returns an array of all products belonging to the specified category with full details.",
 		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
@@ -345,7 +345,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "get_products_by_segment",
-		Description: "Retrieve all products matching a given segment",
+		Description: "Use this tool to filter products by market segment (e.g., Premium, Budget, Enterprise). Returns an array of all products belonging to the specified segment with full details.",
 		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
@@ -370,7 +370,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "get_product_by_name",
-		Description: "Retrieve all products matching a given name",
+		Description: "Use this tool to search for products by name. Returns all products matching the given name. Useful when you know the product name but not its ID.",
 		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
