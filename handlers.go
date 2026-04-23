@@ -131,9 +131,28 @@ func handleToolCall(w http.ResponseWriter, req JSONRPCRequest, config Config) {
 	args, _ := params.Arguments.(map[string]interface{})
 	result, err := executeToolCall(params.Name, args)
 	if err != nil {
-		sendJSONRPCError(w, req.ID, -32603, "Internal error", err.Error())
+		errResult := CallToolResult{
+			Content: []TextContent{{Type: "text", Text: err.Error()}},
+			IsError: true,
+		}
+		sendJSONRPCResponse(w, req.ID, errResult)
 		return
 	}
 
-	sendJSONRPCResponse(w, req.ID, result)
+	// Wrap result in MCP-compliant CallToolResult structure
+	resultJSON, marshalErr := json.Marshal(result)
+	if marshalErr != nil {
+		errResult := CallToolResult{
+			Content: []TextContent{{Type: "text", Text: "failed to serialize result"}},
+			IsError: true,
+		}
+		sendJSONRPCResponse(w, req.ID, errResult)
+		return
+	}
+
+	callResult := CallToolResult{
+		Content: []TextContent{{Type: "text", Text: string(resultJSON)}},
+		IsError: false,
+	}
+	sendJSONRPCResponse(w, req.ID, callResult)
 }

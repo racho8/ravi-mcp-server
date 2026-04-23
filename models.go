@@ -105,6 +105,16 @@ type ToolCallParams struct {
 	Arguments interface{} `json:"arguments,omitempty"`
 }
 
+type TextContent struct {
+	Type string `json:"type"`
+	Text string `json:"text"`
+}
+
+type CallToolResult struct {
+	Content []TextContent `json:"content"`
+	IsError bool          `json:"isError"`
+}
+
 type Config struct {
 	MicroserviceURL string
 	Port            string
