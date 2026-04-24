@@ -169,11 +169,11 @@ func getProductByName(params map[string]interface{}) (interface{}, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("product service returned status %d", resp.StatusCode)
 	}
-	var products []map[string]interface{}
-	if err := json.NewDecoder(resp.Body).Decode(&products); err != nil {
+	var result interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, err
 	}
-	return products, nil
+	return result, nil
 }
 
 // business logic implementations
