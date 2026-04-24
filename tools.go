@@ -201,7 +201,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "list_products",
-		Description: "Use this tool to list all products in the catalog. Returns an array of every product with full details (ID, name, category, segment, price). Takes no arguments.",
+		Description: "Use this tool to list all products in the catalog. Returns an array of every product with full details including ID, name, category, segment, and price. Takes no arguments. For follow-up questions about a specific product's price, category, or details, use get_product_by_name instead of calling this again.",
 		InputSchema: map[string]interface{}{
 			"type":       "object",
 			"properties": map[string]interface{}{},
@@ -370,7 +370,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "get_product_by_name",
-		Description: "Use this tool to search for products by name. Returns all products matching the given name. Useful when you know the product name but not its ID.",
+		Description: "Use this tool to look up a specific product by its name and get its full details including price, category, and segment. Call this when the user asks about a specific product's price, availability, or details. For example: 'What is the price of iPhone 17?' or 'Tell me about Laptop5'.",
 		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
