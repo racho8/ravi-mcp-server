@@ -54,6 +54,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sort"
+	"strings"
 )
 
 // TODO: read it from environment variable MICROSERVICE_URL
@@ -88,6 +90,8 @@ func executeToolCall(toolName string, params map[string]interface{}) (interface{
 		return deleteProduct(params)
 	case "delete_products":
 		return deleteProducts(params)
+	case "search_products":
+		return searchProducts(params)
 	}
 	return nil, fmt.Errorf("unknown tool: %s", toolName)
 }
@@ -180,6 +184,114 @@ func getProductByName(params map[string]interface{}) (interface{}, error) {
 func deleteProducts(params map[string]interface{}) (interface{}, error) {
 	url := productServiceBaseURL + "/products/delete"
 	return invokeMicroservice("POST", url, params)
+}
+
+// Searches, filters, and sorts products with optional category/segment/name filters
+func searchProducts(params map[string]interface{}) (interface{}, error) {
+	// Fetch all products from backend
+	url := productServiceBaseURL + "/products"
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("product service returned status %d", resp.StatusCode)
+	}
+	var products []map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&products); err != nil {
+		return nil, err
+	}
+
+	// Filter by category
+	if category, ok := params["category"].(string); ok && category != "" {
+		var filtered []map[string]interface{}
+		for _, p := range products {
+			if cat, ok := p["category"].(string); ok && strings.EqualFold(cat, category) {
+				filtered = append(filtered, p)
+			}
+		}
+		products = filtered
+	}
+
+	// Filter by segment
+	if segment, ok := params["segment"].(string); ok && segment != "" {
+		var filtered []map[string]interface{}
+		for _, p := range products {
+			if seg, ok := p["segment"].(string); ok && strings.EqualFold(seg, segment) {
+				filtered = append(filtered, p)
+			}
+		}
+		products = filtered
+	}
+
+	// Filter by name (partial, case-insensitive)
+	if name, ok := params["name"].(string); ok && name != "" {
+		var filtered []map[string]interface{}
+		for _, p := range products {
+			if n, ok := p["name"].(string); ok && strings.Contains(strings.ToLower(n), strings.ToLower(name)) {
+				filtered = append(filtered, p)
+			}
+		}
+		products = filtered
+	}
+
+	// Sort
+	sortBy := "price"
+	if sb, ok := params["sort_by"].(string); ok && sb != "" {
+		sortBy = sb
+	}
+	order := "desc"
+	if o, ok := params["order"].(string); ok && o != "" {
+		order = o
+	}
+
+	sort.Slice(products, func(i, j int) bool {
+		if sortBy == "name" {
+			ni, _ := products[i]["name"].(string)
+			nj, _ := products[j]["name"].(string)
+			if order == "asc" {
+				return strings.ToLower(ni) < strings.ToLower(nj)
+			}
+			return strings.ToLower(ni) > strings.ToLower(nj)
+		}
+		// sort by price
+		pi := toFloat64(products[i]["price"])
+		pj := toFloat64(products[j]["price"])
+		if order == "asc" {
+			return pi < pj
+		}
+		return pi > pj
+	})
+
+	// Limit results
+	if limitVal, ok := params["limit"]; ok {
+		limit := int(toFloat64(limitVal))
+		if limit > 0 && limit < len(products) {
+			products = products[:limit]
+		}
+	}
+
+	return products, nil
+}
+
+// toFloat64 converts a numeric interface value to float64
+func toFloat64(v interface{}) float64 {
+	switch n := v.(type) {
+	case float64:
+		return n
+	case float32:
+		return float64(n)
+	case int:
+		return float64(n)
+	case int64:
+		return float64(n)
+	case json.Number:
+		f, _ := n.Float64()
+		return f
+	default:
+		return 0
+	}
 }
 
 func createProduct(params map[string]interface{}) (interface{}, error) {

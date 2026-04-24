@@ -35,6 +35,7 @@ func TestToolsAvailable(t *testing.T) {
 		"get_products_by_category",
 		"get_products_by_segment",
 		"get_product_by_name",
+		"search_products",
 	}
 
 	if len(tools) != len(expectedTools) {

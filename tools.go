@@ -201,7 +201,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "list_products",
-		Description: "Use this tool to list all products in the catalog. Returns an array of every product with full details including ID, name, category, segment, and price. Takes no arguments. For follow-up questions about a specific product's price, category, or details, use get_product_by_name instead of calling this again.",
+		Description: "Use this tool to list all products in the catalog. Returns an array of every product with full details including ID, name, category, segment, and price. Takes no arguments. Also useful for answering comparative questions like 'most expensive product', 'cheapest product', or 'how many products exist'. For follow-up questions about a specific product's price, category, or details, use get_product_by_name instead of calling this again. For filtered comparisons (e.g., 'most expensive laptop'), prefer search_products or get_products_by_category.",
 		InputSchema: map[string]interface{}{
 			"type":       "object",
 			"properties": map[string]interface{}{},
@@ -320,7 +320,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "get_products_by_category",
-		Description: "Use this tool to filter products by category (e.g., Electronics, Clothing, Food). Returns an array of all products belonging to the specified category with full details.",
+		Description: "Use this tool to filter products by category (e.g., Electronics, Clothing, Food). Returns an array of all products belonging to the specified category with full details. Use this to answer comparative questions within a category, such as 'most expensive electronic', 'cheapest phone', or 'how many products are in Electronics'.",
 		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
@@ -345,7 +345,7 @@ var tools = []ToolSchema{
 	},
 	{
 		Name:        "get_products_by_segment",
-		Description: "Use this tool to filter products by market segment (e.g., Premium, Budget, Enterprise). Returns an array of all products belonging to the specified segment with full details.",
+		Description: "Use this tool to filter products by market segment (e.g., Premium, Budget, Enterprise). Returns an array of all products belonging to the specified segment with full details. Use this to answer comparative questions within a segment, such as 'most expensive premium product', 'cheapest budget item', or 'how many products are in the Enterprise segment'.",
 		InputSchema: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
@@ -389,6 +389,63 @@ var tools = []ToolSchema{
 				"name": "get_product_by_name",
 				"arguments": map[string]interface{}{
 					"name": "<product name>",
+				},
+			},
+		},
+	},
+	{
+		Name:        "search_products",
+		Description: "Use this tool to search, filter, and sort products. Supports filtering by category, segment, or name, and sorting by price or name in ascending or descending order. Use this to answer comparative questions like 'What is the most expensive iPhone?', 'What is the cheapest product in Electronics?', 'Show me the top 3 premium products by price', or 'What is the most expensive product in the laptops segment?'. Use the 'limit' parameter to return only the top N results.",
+		InputSchema: map[string]interface{}{
+			"type": "object",
+			"properties": map[string]interface{}{
+				"category": map[string]interface{}{
+					"type":        "string",
+					"description": "Filter by product category (e.g., Electronics, Clothing, Food)",
+				},
+				"segment": map[string]interface{}{
+					"type":        "string",
+					"description": "Filter by market segment (e.g., Premium, Budget, Enterprise)",
+				},
+				"name": map[string]interface{}{
+					"type":        "string",
+					"description": "Filter by product name (partial match, case-insensitive)",
+				},
+				"sort_by": map[string]interface{}{
+					"type":        "string",
+					"description": "Field to sort by: 'price' or 'name'. Defaults to 'price'",
+					"enum":        []string{"price", "name"},
+				},
+				"order": map[string]interface{}{
+					"type":        "string",
+					"description": "Sort order: 'asc' for ascending (cheapest first) or 'desc' for descending (most expensive first). Defaults to 'desc'",
+					"enum":        []string{"asc", "desc"},
+				},
+				"limit": map[string]interface{}{
+					"type":        "number",
+					"description": "Maximum number of results to return. Use 1 to get the single most/least expensive product",
+				},
+			},
+		},
+		Schema: map[string]interface{}{
+			"category": "string (optional)",
+			"segment":  "string (optional)",
+			"name":     "string (optional)",
+			"sort_by":  "string (optional, 'price' or 'name')",
+			"order":    "string (optional, 'asc' or 'desc')",
+			"limit":    "number (optional)",
+		},
+		SampleRequest: map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id":      "<id>",
+			"method":  "tools/call",
+			"params": map[string]interface{}{
+				"name": "search_products",
+				"arguments": map[string]interface{}{
+					"category": "Electronics",
+					"sort_by":  "price",
+					"order":    "desc",
+					"limit":    1,
 				},
 			},
 		},
